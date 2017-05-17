@@ -11,9 +11,8 @@ class Mediator():
 		self.PaymentOptions = payments.PaymentOptions(self)
 		self.DelinquentNotice = payments.DelinquentNotice(self)
 		self.WorkOrderOptions = workOrder.WorkOrderOptions(self)
-	def add_object(self, object):
-		self.objects.append(object)
-
+		self.WorkOrderManager = workOrder.WorkOrderManager(self)
+	#def add_object(self, object):	self.objects.append(object)#NOT NEEDED, MAYBE LATER
 
 #-----------------------------------------------------------------------------------------------------------------
 class QuestionInputValidation(object):
@@ -59,7 +58,12 @@ class QuestionInputValidation(object):
 		'''
 		HANDLES STRING LENGTH VALIDATION TO ENSURE ENTERED WORK ORDER HAS A DESCRIPTION OF THE ISSUE
 		'''
-		raise BadData	
+		if len(variable) > 2:
+			final_variable = variable
+		else:
+			final_variable ='bad'
+
+		#raise BadData	
 #-----------------------------------------------------------------------------------------------------------------
 class Output(object):#BASE/ABSTRACT OUTPUT CLASS
 	def __init__(self, mediator):

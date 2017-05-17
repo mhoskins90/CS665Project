@@ -1,7 +1,9 @@
 from Module_Utilities import BadData #CUSTOM EXCEPTION CLASS USED FOR TESTS
 from Module_Utilities import Output
 
-class ResidentWorkOrderHandler(object):
+class WorkOrderManager(object):
+	def __init__(self, mediator):
+		self.mediator = mediator
 
 	def ask_work_order_questions(self):
 		'''
