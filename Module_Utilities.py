@@ -1,38 +1,71 @@
 class BadData(Exception):#CUSTOM EXCEPTION CLASS USED FOR TESTS
 	pass
+
+class Mediator():    
+	def __init__(self):
+		import Module_Payments as payments
+		import Module_WorkOrders as workOrder
+		self.objects = []
+		self.QuestionInputValidation = QuestionInputValidation(self)
+		self.PaymentManager = payments.PaymentManager(self)
+		self.PaymentOptions = payments.PaymentOptions(self)
+		self.DelinquentNotice = payments.DelinquentNotice(self)
+		self.WorkOrderOptions = workOrder.WorkOrderOptions(self)
+	def add_object(self, object):
+		self.objects.append(object)
+
+
 #-----------------------------------------------------------------------------------------------------------------
 class QuestionInputValidation(object):
-
-	def unit_number_int_validation(self):
+	def __init__(self, mediator):
+		self.mediator = mediator
+		#self.QuestionInputValidation = QuestionInputValidation()
+	def integer_validation(self, variable):
 		'''
 		HANDLES INTEGER VALIDATION FOR UNIT NUMBERS
 		'''
-		#pass #CHECK FOR ACCURACY
-		raise BadData
-	def date_validation(self):
+		try:
+			final_variable = int(variable)
+		except Exception as error:
+			final_variable = 'bad'
+			print('Error, {0}'.format(error))
+		return final_variable
+	def date_validation(self, variable):
 		'''
 		HANDLES DATE VALIDATION, TO ENSURE DATE IS IN PROPER FORMAT
 		'''
-		raise BadData
-	def monetary_float_validation(self):
+		import datetime#NEEDED FOR DATE CHECK
+
+		try:
+			final_variable = variable
+			datetime.datetime.strptime(final_variable, '%m/%d')
+		except Exception as error:
+			final_variable = 'bad'
+			print('Error, {0}'.format(error))
+		return final_variable
+
+	def monetary_float_validation(self, variable):
 		'''
 		HANDLES MONEY VALIDATION TO ENSURE NUMBER CAN BE CONVERTED TO FLOAT
 		'''
-		raise BadData
-	def work_order_description_validation(self):
+		try:
+			final_variable = float(variable)
+			#final_variable = "{0:.2f}".format(final_variable)
+		except Exception as error:
+			final_variable = 'bad'
+			print('Error, {0}'.format(error))
+		return final_variable
+	def string_length_validation(self, variable):
 		'''
 		HANDLES STRING LENGTH VALIDATION TO ENSURE ENTERED WORK ORDER HAS A DESCRIPTION OF THE ISSUE
 		'''
 		raise BadData	
 #-----------------------------------------------------------------------------------------------------------------
-class WorkOrderAndPaymentsCalculations(object):
-	def calculate_and_display_delinquent_payments(self):
-		'''
-		METHOD WILL CALCULATE ENTRIES THAT STILL OWE MONEY AND RETURN THEM TO CONSOLE
-		'''
-		raise BadData
-	def calculate_and_display_work_order_entries(self):
-		'''
-		METHOD WILL CALCULATE TOTAL WORK ENTRIES FOR ENTERED UNITS AND RETURN THE NUMBER AS WELL AS ISSUE TO CONSOLE
-		'''
-		raise BadData
+class Output(object):#BASE/ABSTRACT OUTPUT CLASS
+	def __init__(self, mediator):
+		self.mediator = mediator
+
+	def display(self):
+		pass
+	def store(self):
+		pass
