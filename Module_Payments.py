@@ -145,6 +145,7 @@ class DelinquentNotice(object):
 		self.mediator = mediator
 
 	def generate_late_rent_document(self, list_of_overdue_residents):
+		import os
 		document_titles = []
 		for item in list_of_overdue_residents:
 			unit_for_doc_title = item.split(':')[0]
@@ -158,8 +159,11 @@ class DelinquentNotice(object):
 		if document_titles:
 			#print(document_titles)#TESTING
 			counter = 0
+			if not os.path.exists("DelinquentNotices"):#PLACED HERE SO THERE ARE NOT STUPID CRASHES
+				os.makedirs("DelinquentNotices")
+
 			for document in document_titles:
-				with open('DelinquentNotices/'+document+".txt", 'w') as file:
+				with open(os.path.join('DelinquentNotices', document+'.txt'), 'w') as file:
 					file.write("Dear Resident,\n\n")
 					file.write("Our records indicate that:\n{0}\n\n".format(list_of_overdue_residents[counter]))
 					file.write("Please drop by the leasing office and pay at your earliest convenience.\n\n")
