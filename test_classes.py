@@ -46,7 +46,7 @@ def test_string_length_validation():
 
 ###########--------------PAYMENTS TESTS-----------------###########
 
-#TESTS
+
 '''
 def test_ask_payment_data_questions(): #YOU CAN'T TEST INPUT QUESTIONS
 	try:#
@@ -58,8 +58,26 @@ def test_ask_payment_data_questions(): #YOU CAN'T TEST INPUT QUESTIONS
 '''
 #------------------------------------------------------------------
 
-#TESTS
+def test_determine_p():
+	try:
+		mediator.PaymentOptions.determine([{'unit_number':17, 'due_date':'05/05', 'date_collected':'05/05', 'amount_due':1100, 'amount_collected':900}])
+	except Exception:
+		assert False
+	else:
+		assert True
+
 list_for_test = ['Test: for Test in Test.']
+
+def test_display_p():
+	try:
+		mediator.PaymentOptions.display(list_for_test)
+	except Exception:
+		assert False
+	else:
+		assert True
+
+
+
 def test_generate_late_rent_document():
 	try:
 		mediator.DelinquentNotice.generate_late_rent_document(list_for_test)
@@ -67,6 +85,7 @@ def test_generate_late_rent_document():
 		assert False
 	else:
 		assert True
+
 
 ###########--------------WORK ORDER MODULE TESTS-----------------###########
 
