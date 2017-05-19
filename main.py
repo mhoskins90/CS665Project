@@ -17,10 +17,7 @@ def initial_question():
 
 def main():
 	outer_most_continue = "y"
-	#mediator = utilities.Mediator()#MEDIATOR OBJECT - I UPGRADED THIS TO USE ABSTRACT FACTORY, NOT NEEDED BUT I WANTED TO TEST IT OUT.
-	abstract_mediator = utilities.MediatorWrapper(utilities.MediatorConcreteFactory())
-	mediator = abstract_mediator.factory.makeMediator()#ABSTRACT FACTORY MEDIATOR OBJECT
-
+	mediator = utilities.Mediator()#MEDIATOR OBJECT
 	while outer_most_continue == "y":
 		initial_question()
 		if section_to_access == "q" or section_to_access == "quit":
