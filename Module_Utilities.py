@@ -5,7 +5,7 @@ class Mediator():
 	def __init__(self):
 		import Module_Payments as payments
 		import Module_WorkOrders as workOrder
-		self.objects = []
+		#self.objects = []
 		self.QuestionInputValidation = QuestionInputValidation(self)
 		self.PaymentManager = payments.PaymentManager(self)
 		self.PaymentOptions = payments.PaymentOptions(self)
@@ -16,18 +16,28 @@ class Mediator():
 	
 #ABSTRACT FACTORY
 class MediatorAbstractFactory:
-    def makeMediator(self): 
-    	pass
+	def makeMediator(self): 
+		pass
+	def MakeQuestionInputValidation(self):
+		pass
+	def MakePaymentManager(self): #NOT USED BECAUSE OF MY MEDIATOR
+		pass
 
 #CONCRETE 
-#ONLY 1 BECAUSE THIS IS A TEST OF ABSTRACT FACTORY:
+#ONLY MEDIATOR USED BECAUSE THIS IS A TEST OF ABSTRACT FACTORY:
 class MediatorConcreteFactory(MediatorAbstractFactory):
-    def makeMediator(self): 
-    	return Mediator()
-
+	def makeMediator(self): 
+		return Mediator()
+	def MakeQuestionInputValidation(self): #NOT USED BECAUSE OF MY MEDIATOR
+		return QuestionInputValidation()
+	def MakePaymentManager(self): #NOT USED BECAUSE OF MY MEDIATOR
+		return MakePaymentManager()
+	def MakeWorkOrderManager(self): #NOT USED BECAUSE OF MY MEDIATOR
+		return MakeWorkOrderManager()
+		
 class MediatorWrapper:
-    def __init__(self, factory):
-        self.factory = factory
+	def __init__(self, factory):
+		self.factory = factory
 
 #-----------------------------------------------------------------------------------------------------------------
 class QuestionInputValidation(object):
