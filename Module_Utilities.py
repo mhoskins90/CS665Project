@@ -13,6 +13,21 @@ class Mediator():
 		self.WorkOrderOptions = workOrder.WorkOrderOptions(self)
 		self.WorkOrderManager = workOrder.WorkOrderManager(self)
 	#def add_object(self, object):	self.objects.append(object)#NOT NEEDED, MAYBE LATER
+	
+#ABSTRACT FACTORY
+class MediatorAbstractFactory:
+    def makeMediator(self): 
+    	pass
+
+#CONCRETE 
+#ONLY 1 BECAUSE THIS IS A TEST OF ABSTRACT FACTORY:
+class MediatorConcreteFactory(MediatorAbstractFactory):
+    def makeMediator(self): 
+    	return Mediator()
+
+class MediatorWrapper:
+    def __init__(self, factory):
+        self.factory = factory
 
 #-----------------------------------------------------------------------------------------------------------------
 class QuestionInputValidation(object):
