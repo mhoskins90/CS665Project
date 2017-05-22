@@ -1,3 +1,4 @@
+
 class BadData(Exception):#CUSTOM EXCEPTION CLASS USED FOR TESTS
 	pass
 
@@ -7,37 +8,44 @@ class Mediator():
 		import Module_WorkOrders as workOrder
 		#self.objects = []
 		self.QuestionInputValidation = QuestionInputValidation(self)
-		self.PaymentManager = payments.PaymentManager(self)
+		#self.PaymentManager = payments.PaymentManager(self)
 		self.PaymentOptions = payments.PaymentOptions(self)
 		self.DelinquentNotice = payments.DelinquentNotice(self)
 		self.WorkOrderOptions = workOrder.WorkOrderOptions(self)
-		self.WorkOrderManager = workOrder.WorkOrderManager(self)
+		#self.WorkOrderManager = workOrder.WorkOrderManager(self)
 	#def add_object(self, object):	self.objects.append(object)#NOT NEEDED, MAYBE LATER
-	
-#ABSTRACT FACTORY
-class MediatorAbstractFactory:
-	def makeMediator(self): 
+
+#---------------------------------------------------------------------------------
+#ABSTRACT
+class AbstractFactory():
+	def make_payment_manager(self): 
 		pass
-	def MakeQuestionInputValidation(self):
+	def make_work_order_manager(self):
 		pass
-	def MakePaymentManager(self): #NOT USED BECAUSE OF MY MEDIATOR
+
+class AbstractPaymentManager():
+	def ask_payment_data_questions(self):
+		pass
+
+class AbstractWorkOrderManager():
+	def ask_work_order_questions(self):
 		pass
 
 #CONCRETE 
-#ONLY MEDIATOR USED BECAUSE THIS IS A TEST OF ABSTRACT FACTORY:
-class MediatorConcreteFactory(MediatorAbstractFactory):
-	def makeMediator(self): 
-		return Mediator()
-	def MakeQuestionInputValidation(self): #NOT USED BECAUSE OF MY MEDIATOR
-		return QuestionInputValidation()
-	def MakePaymentManager(self): #NOT USED BECAUSE OF MY MEDIATOR
-		return MakePaymentManager()
-	def MakeWorkOrderManager(self): #NOT USED BECAUSE OF MY MEDIATOR
-		return MakeWorkOrderManager()
+class ConcreteFactory(AbstractFactory):
+
+	def make_payment_manager(self): 
+		import Module_Payments as payments
+		return payments.PaymentManager()
+	def make_work_order_manager(self):
+		import Module_WorkOrders as workOrder
+		return workOrder.WorkOrderManager()
+
 		
-class MediatorWrapper:
-	def __init__(self, factory):
-		self.factory = factory
+class factoryType:
+	def __init__(self, type):
+		self.type = type
+
 
 #-----------------------------------------------------------------------------------------------------------------
 class QuestionInputValidation(object):
@@ -87,6 +95,8 @@ class QuestionInputValidation(object):
 			final_variable = variable
 		else:
 			final_variable ='bad'
+			print('Error, {0}'.format("You must enter more than 2 characters."))
+		return final_variable
 
 		#raise BadData	
 #-----------------------------------------------------------------------------------------------------------------

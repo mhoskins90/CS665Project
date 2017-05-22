@@ -2,14 +2,15 @@ from Module_Utilities import BadData #CUSTOM EXCEPTION CLASS USED FOR TESTS
 import Module_Utilities as utilities
 from Module_Utilities import Output
 
-class PaymentManager(object):
-	def __init__(self, mediator):
+class PaymentManager(utilities.AbstractPaymentManager):
+	def __init__(self):
 		self.final_payment_list = []
-		self.mediator = mediator#MEDIATOR OBJECT
+		#self.mediator = mediator#MEDIATOR OBJECT
 		self.duplicate_entries = []
 
 
-	def ask_payment_data_questions(self):
+	def ask_payment_data_questions(self, mediator):
+		self.mediator = mediator
 		#self.final_payment_list = []
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR PAYMENT DATA ENTRY

@@ -18,21 +18,21 @@ def initial_question():
 def main():
 	outer_most_continue = "y"
 	mediator = utilities.Mediator()#MEDIATOR OBJECT
+	factory= utilities.factoryType(utilities.ConcreteFactory())#ABSTRACT FACTORY
+
 	while outer_most_continue == "y":
 		initial_question()
 		if section_to_access == "q" or section_to_access == "quit":
 			outer_most_continue ="n"#BREAK OUT OF LOOP
 #-------------------------------------------------------------------------------------------
 		if section_to_access == "p" or section_to_access == "payments":
+			paymentManager = factory.type.make_payment_manager()#MADE WITH ABSTRACT FACTORY
 
-			#test=['Unit 1: owes $35.00 for May in 2017.', 'Unit 2: owes $35.00 for May in 2017.']
-			#mediator.DelinquentNotice.generate_late_rent_document(test)#PASSED VIA MEDIATOR
-
-			mediator.PaymentManager.ask_payment_data_questions()#ASK PAYMENT DATA QUESTIONS VIA MEDIATOR, NOT NEEDED BUT WHY NOT...
+			paymentManager.ask_payment_data_questions(mediator)#ASK PAYMENT DATA QUESTIONS
 			print('')#FORMATTING
 			
 			#DETERMINE WHICH RESIDENTS STILL OWE MONEY FOR A MONTH
-			overdue_residents = mediator.PaymentOptions.determine(mediator.PaymentManager.final_payment_list)#PASSED VIA MEDIATOR
+			overdue_residents = mediator.PaymentOptions.determine(paymentManager.final_payment_list)#PASSED VIA MEDIATOR
 
 			#DISPLAY OVERDUE RESIDENTS
 			mediator.PaymentOptions.display(overdue_residents)#PASSED VIA MEDIATOR
@@ -41,7 +41,13 @@ def main():
 			mediator.DelinquentNotice.generate_late_rent_document(overdue_residents)#PASSED VIA MEDIATOR
 #-------------------------------------------------------------------------------------------
 		if section_to_access == "wo" or section_to_access == "workorder" or section_to_access == "workorders":
-			print("\nSorry, Work Orders are not implemented yet. Try (P) Payments.\n")
+			
+			WorkOrderManager = factory.type.make_work_order_manager()#MADE WITH ABSTRACT FACTORY
+			WorkOrderManager.ask_work_order_questions(mediator)
+			print('')#FORMATTING
+			#print('\nObject below made with Abstract Factory')
+			#print(WorkOrderManager)
+			#print("\nSorry, Work Orders are not completely implemented yet..\n")
 
 
 if __name__ == "__main__":
