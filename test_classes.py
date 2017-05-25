@@ -5,10 +5,18 @@ import Module_Utilities as utilities #MODULE 3
 import pytest#YOU MUST INSTALL PYTEST ON SYSTEM FOR THIS TO WORK
 #pip install pytest
 
-mediator = utilities.Mediator()#MEDIATOR OBJECT
+QuestionInputValidation = utilities.QuestionInputValidation()
+PaymentOutput = payments.PaymentOutput()
+DelinquentNotice = payments.DelinquentNotice()
+WorkOrderOutput = workOrders.WorkOrderOutput()
+DatabaseManager1 = utilities.DatabaseManager()#SINGLETON
+DatabaseManager2 = utilities.DatabaseManager()#SINGLETON
 
 ###########--------------UTILITIES TESTS-----------------###########
 #-------------------------------------------------------------------
+def test_singleton_database():
+	assert id(DatabaseManager1) == id(DatabaseManager2)
+
 
 #TESTS VALIDATION
 integer_for_test = 1234
@@ -17,35 +25,37 @@ date_for_test = '05/05'#THIS IS THE FORMAT NEEDED
 string_for_test = 'This is a test'
 
 def test_integer_validation():
-	if mediator.QuestionInputValidation.integer_validation(integer_for_test) == 'bad':
+	if QuestionInputValidation.validate_integer(integer_for_test) == 'bad':
 		assert False#USED TO CATCH PYTEST
 	else:
 		assert True
 
 def test_date_validation():
-	if mediator.QuestionInputValidation.date_validation(date_for_test) == 'bad':
+	if QuestionInputValidation.validate_date(date_for_test) == 'bad':
 		assert False
 	else:
 		assert True
 
 def test_monetary_float_validation():
-	if mediator.QuestionInputValidation.monetary_float_validation(float_for_test) == 'bad':
+	if QuestionInputValidation.validate_monetary_float(float_for_test) == 'bad':
 		assert False
 	else:
 		assert True
 
 def test_string_length_validation():
-	if mediator.QuestionInputValidation.string_length_validation(string_for_test) == 'bad':
+	if QuestionInputValidation.validate_string_length(string_for_test) == 'bad':
 		assert False
 	else:
 		assert True
 
 #-------------------------------------------------------------------
 
-
+PaymentFactory1 = payments.PaymentFactory()#SINGLETON
+PaymentFactory2 = payments.PaymentFactory()#SINGLETON
 
 ###########--------------PAYMENTS TESTS-----------------###########
-
+def test_singleton_payment_factory():
+	assert id(PaymentFactory1) == id(PaymentFactory2)
 
 '''
 def test_ask_payment_data_questions(): #YOU CAN'T TEST INPUT QUESTIONS
@@ -60,7 +70,7 @@ def test_ask_payment_data_questions(): #YOU CAN'T TEST INPUT QUESTIONS
 
 def test_determine_p():
 	try:
-		mediator.PaymentOptions.determine([{'unit_number':17, 'due_date':'05/05', 'date_collected':'05/05', 'amount_due':1100, 'amount_collected':900}])
+		PaymentOutput.determine([{'unit_number':17, 'due_date':'05/05', 'date_collected':'05/05', 'amount_due':1100, 'amount_collected':900}])
 	except Exception:
 		assert False
 	else:
@@ -70,7 +80,7 @@ list_for_test = ['Test: for Test in Test.']
 
 def test_display_p():
 	try:
-		mediator.PaymentOptions.display(list_for_test)
+		PaymentOutput.display(list_for_test)
 	except Exception:
 		assert False
 	else:
@@ -78,9 +88,9 @@ def test_display_p():
 
 
 
-def test_generate_late_rent_document():
+def test_generate_late_payment_document():
 	try:
-		mediator.DelinquentNotice.generate_late_rent_document(list_for_test)
+		DelinquentNotice.generate_late_payment_document(list_for_test)
 	except Exception:
 		assert False
 	else:
@@ -88,8 +98,11 @@ def test_generate_late_rent_document():
 
 
 ###########--------------WORK ORDER MODULE TESTS-----------------###########
-
+WorkOrderFactory1 = workOrders.WorkOrderFactory()#SINGLETON
+WorkOrderFactory2 = workOrders.WorkOrderFactory()#SINGLETON
 #TESTS
+def test_singleton_work_order_factory():
+	assert id(WorkOrderFactory1) == id(WorkOrderFactory2)
 '''
 def test_ask_work_order_questions(): #YOU CAN'T TEST INPUT QUESTIONS
 	try:
@@ -100,9 +113,11 @@ def test_ask_work_order_questions(): #YOU CAN'T TEST INPUT QUESTIONS
 		assert True
 '''
 #-----------------------------------------------------------THESE FAIL BECAUSE THEY HAVE NOT BEEN IMPLEMENTED YET.
+tuple_to_display = ()
+dict_of_answers = [{'unit_number': 'test', 'issue': 'test','type': 'test'}]
 def test_determine():
 	try:
-		mediator.WorkOrderOptions.determine()
+		WorkOrderOutput.determine()
 	except Exception:
 		assert False
 	else:
@@ -110,7 +125,7 @@ def test_determine():
 
 def test_display():
 	try:
-		mediator.WorkOrderOptions.display()
+		WorkOrderOutput.display(tuple_to_display)
 	except Exception:
 		assert False
 	else:
@@ -118,7 +133,7 @@ def test_display():
 
 def test_store():
 	try:
-		mediator.WorkOrderOptions.store()
+		WorkOrderOutput.store([{'unit_number': 0, 'issue': 'test', 'type': 'test'}])
 	except Exception:
 		assert False
 	else:
