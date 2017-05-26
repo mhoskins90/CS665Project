@@ -103,7 +103,7 @@ class WorkOrderKitchen():
 			
 
 			self.final_work_order_list.append(dict_of_answers)#THIS ALLOWS FOR MULTPLE ENTRIES
-			print(self.final_work_order_list)
+			#print(self.final_work_order_list)
 			continue_asking_work_order_questions = input("Continue entering Work Orders? (Y) Yes | Enter any other key to stop:  ")
 			if continue_asking_work_order_questions.lower() != "y" and continue_asking_work_order_questions.lower() != "yes":
 				valid ="Y"
@@ -141,6 +141,7 @@ class RequiredWOClass():
 		print('\n------Entry has been saved in DB.------\n')	
 
 class WorkOrderOutput(RequiredWOClass, AbstractRequiredWOClass, GenericOutput):
+	#KNOWN ISSUE: NEED TO PROVIDE A METHOD FOR DELETING WORK ORDERS FROM DB. WILL COMPLETE NEXT VERSION.
 	def __init__(self):
 		import os
 		if not os.path.exists("WorkOrders"):#PLACED HERE SO THERE ARE NOT STUPID CRASHES
@@ -155,7 +156,6 @@ class WorkOrderOutput(RequiredWOClass, AbstractRequiredWOClass, GenericOutput):
 		selected = results.fetchall()
 		return selected
 	def display(self, tuple_to_display):
-		
 		'''
 		METHOD WILL DISPLAY WORK ORDER ENTRIES
 		'''
@@ -165,22 +165,5 @@ class WorkOrderOutput(RequiredWOClass, AbstractRequiredWOClass, GenericOutput):
 			for row in tuple_to_display:#0,1,2,3,4
 				
 				print("{0}: ({1}) Unit {2} has a {4} in the {3}. ".format(row[0], row[1], row[2], row[3], row[4]))
-		'''
-	def store(self, entered_data):
-		'''
-		#METHOD WILL STORE WORK ORDER ENTRIES
-		'''
-		for dictionary in entered_data:
-			#print(dictionary)
-			unit_number = dictionary['unit_number']
-			type = dictionary['type']
-			issue = dictionary['issue']
 
-			query = 'INSERT INTO workOrders (workOrderID, entry_date, unitNumber, type, issue)VALUES (null,CURRENT_DATE,{0},"{1}","{2}")'.format(unit_number, type, issue)
-			#print(query)#TESTING
-		#self.dbHandler.query('"INSERT INTO workOrders (workOrderID, entry_date, unitNumber, type, issue)VALUES (?,?,?,?,?)",(1,2,3,4,5)')#ISSUE BECAUSE IT LOOKS LIKE MULTIPLE ARUGMENTS
-		self.dbHandler.query(query)
-		print('\n------Entry has been saved in DB.------\n')
 		
-		#raise BadData
-		'''

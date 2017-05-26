@@ -71,7 +71,7 @@ def main():
 			dbHandler.query('''CREATE TABLE IF NOT EXISTS 
 			workOrders(workOrderID INTEGER PRIMARY KEY, entry_date TEXT default CURRENT_DATETIME, unitNumber INTEGER, type TEXT, issue TEXT)''')#NEED TO ENSURE THIS TABLE IS THERE
 			while True:
-				work_order_selection = input("Select what you want to do: (B)Bedroom Work Orders, (K)Kitchen Work Orders, (C)Check Work Orders :  ")
+				work_order_selection = input("Select what you want to do: (B) Bedroom Work Orders, (K) Kitchen Work Orders, (C) Check Work Orders :  ")
 				if work_order_selection.lower() == 'bedroom' or work_order_selection.lower() == 'b':
 					work_order_manager= utilities.factoryType(workOrders.WorkOrderManager())#ABSTRACT FACTORY
 					work_order_factory = work_order_manager.type.make_work_order()
