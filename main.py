@@ -1,6 +1,6 @@
-import Module_Payments as payments #MODULE 1
-import Module_WorkOrders as workOrders #MODULE 2
-import Module_Utilities as utilities #MODULE 3
+import Module_Payments as payments 
+import Module_WorkOrders as workOrders
+import Module_Utilities as utilities
 
 valid_payments_selection = ['p','pay','payments','payment']
 valid_work_order_selection = ['w','wo','work','order','workorder','workorders']
@@ -9,7 +9,7 @@ valid_quit_selection = ['q', 'quit','stop','exit','exit()', 'end']
 combined_valid_entries = valid_payments_selection + valid_work_order_selection +valid_contacts_selection + valid_quit_selection
 
 def initial_question():
-	global section_to_access#GLOBAL DEC
+	global section_to_access
 	while True:
 		section_to_access = input("Which section of the program do you want to access? (P) Payments, (WO) Work Orders, (C) Contacts (Q) Quit:  ")
 		section_to_access = section_to_access.lower().replace(" ", "")#FOR WORK ORDERS I HAD TO USE REPLACE AS WELL
