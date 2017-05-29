@@ -145,67 +145,92 @@ class GenericOutput(object):#BASE/ABSTRACT OUTPUT CLASS
 	def make_work_order_output():
 		import Module_WorkOrders as workOrders
 		return workOrders.WorkOrderOutput()
-#-----------------------------------------------------------------------------------------------------------------
-class CompanyContacts():
-	def display_name_number(self):
-		pass
+#-----------------------------------------------------------------------------------------------------------------ITERATOR
+class CompanyEmployee:
+	def __init__(self, position, first_name, last_name, state, phone_number):
+		self.position = position
+		self.first_name = first_name
+		self.last_name = last_name
+		self.state = state
+		self.phone_number = phone_number
 
+	def __str__(self, type):
+		if type.lower() == 'name':#FOR CLEAN OUTPUT
+			return "{last}, {first} | {position} | {state} | {phone}".format(last=self.last_name, \
+			 first=self.first_name, position=self.position, state=self.state, phone=self.phone_number)
+		if type.lower() == 'title':#FOR CLEAN OUTPUT
+			return "{position}| {last}, {first} | {state} | {phone}".format(last=self.last_name, \
+				first=self.first_name, position=self.position, state=self.state, phone=self.phone_number)
+		if type.lower() == 'state':#FOR CLEAN OUTPUT
+			return "{state}| {position} | {last}, {first} | {phone}".format(last=self.last_name, \
+				first=self.first_name, position=self.position, state=self.state, phone=self.phone_number)
 
-class ComplianceDirectors(CompanyContacts):
-	#LEAF
-	def __init__(self, name, phone):
-		self.type = 'Compliance Director'
-		self.name = name
-		self.phone = phone
+class EmployeeNameIterator:
+	def __init__(self, employees):
+		import operator
+		employees.sort(key = operator.attrgetter('last_name'))
+		self.index_of_items = 0
+		self.employees = employees
 
-	def display_name_number(self):
-		print('{0}: {1} - {2}'.format(self.type, self.name, self.phone))
+	def has_next(self):
+		if self.index_of_items >= len(self.employees):
+			return False
+		else:
+			return True
 
-class RegionalDirectors(CompanyContacts):
-	#LEAF
-	def __init__(self, location, name, phone):
-		self.type = 'Regional Director'
-		self.location = location
-		self.name = name
-		self.phone = phone
+	def next(self):
+		next_employee = self.employees[self.index_of_items]
+		self.index_of_items += 1
+		return next_employee
 
-	def display_name_number(self):
-		print('{0}-{1}: {2} - {3}'.format(self.type, self.location, self.name, self.phone))
+class EmployeePositionIterator:
+	def __init__(self, employees):
+		import operator
+		employees.sort(key = operator.attrgetter('position'))
+		self.employees = employees
+		self.index_of_items = 0
 
+	def has_next(self):
+		if self.index_of_items >= len(self.employees):
+			return False
+		else:
+			return True
 
-class CorporateDirectors(CompanyContacts):
-	#NON LEAF
+	def next(self):
+		next_employee = self.employees[self.index_of_items]
+		self.index_of_items += 1
+		return next_employee
+
+class EmployeeStateIterator:
+	def __init__(self, employees):
+		import operator
+		employees.sort(key = operator.attrgetter('state'))
+		self.employees = employees
+		self.index_of_items = 0
+
+	def has_next(self):
+		if self.index_of_items >= len(self.employees):
+			return False
+		else:
+			return True
+
+	def next(self):
+		next_employee = self.employees[self.index_of_items]
+		self.index_of_items += 1
+		return next_employee
+
+class AllEmployees:
 	def __init__(self):
-		self.children = []
+		self.employees = []
 
-	def display_name_number(self):
-		for child_object in self.children:
-			child_object.display_name_number()
+	def add(self, item_to_add):
+		self.employees.append(item_to_add)
 
-	def add(self, object_child):
-		if object_child not in self.children:#I COULD HAVE USED SET BUT THERE WERE ODD ORDERING ISSUES WHEN CHILDREN WERE ADDED
-			self.children.append(object_child)
+	def sort_by_last_names(self):
+		return EmployeeNameIterator(self.employees)
 
+	def sort_by_job_title(self):
+		return EmployeePositionIterator(self.employees)
 
-class IT(CorporateDirectors):
-	#LEAF
-	def __init__(self, name, phone):
-		#super().__init__()
-		self.OuterType = 'Corporate Director'
-		self.InnerType = "Internet Technology"
-		self.name = name
-		self.phone = phone
-
-	def display_name_number(self):
-		print('{0}-{1}: {2} - {3}'.format(self.OuterType, self.InnerType, self.name, self.phone))
-
-class Owner(CorporateDirectors):
-	#LEAF
-	def __init__(self, name, phone):
-		#super().__init__()
-		self.type = 'Owner'
-		self.name = name
-		self.phone = phone
-
-	def display_name_number(self):
-		print('{0}: {1} - {2} {3}'.format(self.type, self.name, self.phone, "(Only Call If Nessesary)"))
+	def sort_by_state(self):
+		return EmployeeStateIterator(self.employees)

@@ -1,6 +1,5 @@
 from Module_Utilities import BadData #CUSTOM EXCEPTION CLASS USED FOR TESTS
 import Module_Utilities as utilities
-from Module_Utilities import GenericOutput
 
 class AbstractPaymentFactory():
 	def make_payment_for_rent(self): 
@@ -195,7 +194,7 @@ class PaymentManager():
 		return PaymentFactory()
 
 
-class PaymentOutput(GenericOutput):
+class PaymentOutput(utilities.GenericOutput):
 	def __init__(self):
 		pass
 

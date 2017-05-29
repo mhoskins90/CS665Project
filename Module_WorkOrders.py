@@ -1,5 +1,4 @@
 from Module_Utilities import BadData #CUSTOM EXCEPTION CLASS USED FOR TESTS
-from Module_Utilities import GenericOutput
 import Module_Utilities as utilities
 
 
@@ -117,30 +116,8 @@ class WorkOrderManager():
 	def make_work_order(self):
 		return WorkOrderFactory()
 
-class AbstractRequiredWOClass():
 
-	def store(self, entered_data):
-		pass	
-
-class RequiredWOClass():
-	
-	def store(self, entered_data):
-		'''
-		METHOD WILL STORE WORK ORDER ENTRIES
-		'''
-		for dictionary in entered_data:
-			#print(dictionary)
-			unit_number = dictionary['unit_number']
-			type = dictionary['type']
-			issue = dictionary['issue']
-
-			query = 'INSERT INTO workOrders (workOrderID, entry_date, unitNumber, type, issue)VALUES (null,CURRENT_DATE,{0},"{1}","{2}")'.format(unit_number, type, issue)
-			#print(query)#TESTING
-		#self.dbHandler.query('"INSERT INTO workOrders (workOrderID, entry_date, unitNumber, type, issue)VALUES (?,?,?,?,?)",(1,2,3,4,5)')#ISSUE BECAUSE IT LOOKS LIKE MULTIPLE ARUGMENTS
-		self.dbHandler.query(query)
-		print('\n------Entry has been saved in DB.------\n')	
-
-class WorkOrderOutput(RequiredWOClass, AbstractRequiredWOClass, GenericOutput):
+class WorkOrderOutput(utilities.GenericOutput):
 	#KNOWN ISSUE: NEED TO PROVIDE A METHOD FOR DELETING WORK ORDERS FROM DB. WILL COMPLETE NEXT VERSION.
 	def __init__(self):
 		import os
@@ -160,10 +137,36 @@ class WorkOrderOutput(RequiredWOClass, AbstractRequiredWOClass, GenericOutput):
 		METHOD WILL DISPLAY WORK ORDER ENTRIES
 		'''
 		if len(tuple_to_display) < 1:
-			print("\nSorry, no work order entries yet.")
+			print("\nSorry, no work order entries.")
 		else:
 			for row in tuple_to_display:#0,1,2,3,4
 				
 				print("{0}: ({1}) Unit {2} has a {4} in the {3}. ".format(row[0], row[1], row[2], row[3], row[4]))
 
+	def delete(self,item_to_delete):
+		'''
+		METHOD WILL DELETE WORK ORDER ENTRIES
+		'''
 		
+		query = 'DELETE FROM workOrders WHERE workOrderID ={0}'.format(item_to_delete)
+		self.dbHandler.query(query)
+		if self.dbHandler.cursor.rowcount == 0:
+			return 'No rows deleted, incorrect entry.'
+		else:
+			return 'Row Deleted'
+
+	def store(self, entered_data):
+		'''
+		METHOD WILL STORE WORK ORDER ENTRIES
+		'''
+		for dictionary in entered_data:
+			#print(dictionary)
+			unit_number = dictionary['unit_number']
+			type = dictionary['type']
+			issue = dictionary['issue']
+
+			query = 'INSERT INTO workOrders (workOrderID, entry_date, unitNumber, type, issue)VALUES (null,CURRENT_DATE,{0},"{1}","{2}")'.format(unit_number, type, issue)
+			#print(query)#TESTING
+		#self.dbHandler.query('"INSERT INTO workOrders (workOrderID, entry_date, unitNumber, type, issue)VALUES (?,?,?,?,?)",(1,2,3,4,5)')#ISSUE BECAUSE IT LOOKS LIKE MULTIPLE ARUGMENTS
+		self.dbHandler.query(query)
+		print('\n------Entry has been saved in DB.------\n')		

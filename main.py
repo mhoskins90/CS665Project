@@ -21,8 +21,6 @@ def initial_question():
 
 def main():
 	outer_most_continue = "y"
-	#paymentOutput = utilities.GenericOutput().make_payment_output()#TESTING STATIC METHOD
-	#print(type(paymentOutput))
 
 	while outer_most_continue == "y":
 		initial_question()
@@ -71,7 +69,7 @@ def main():
 			dbHandler.query('''CREATE TABLE IF NOT EXISTS 
 			workOrders(workOrderID INTEGER PRIMARY KEY, entry_date TEXT default CURRENT_DATETIME, unitNumber INTEGER, type TEXT, issue TEXT)''')#NEED TO ENSURE THIS TABLE IS THERE
 			while True:
-				work_order_selection = input("Select what you want to do: (B) Bedroom Work Orders, (K) Kitchen Work Orders, (C) Check Work Orders :  ")
+				work_order_selection = input("Select what you want to do: (B) Bedroom Work Orders, (K) Kitchen Work Orders, (C) Check Work Orders, (D) Delete Work Orders :  ")
 				if work_order_selection.lower() == 'bedroom' or work_order_selection.lower() == 'b':
 					work_order_manager= utilities.factoryType(workOrders.WorkOrderManager())#ABSTRACT FACTORY
 					work_order_factory = work_order_manager.type.make_work_order()
@@ -94,38 +92,77 @@ def main():
 					selected_items = WorkOrderOutput.determine()#DETERMINE ENTRIES
 					WorkOrderOutput.display(selected_items)#DISPLAY					
 					break
+				elif work_order_selection.lower() == 'delete' or work_order_selection.lower() == 'd':
+					while True:
+						selected_items = WorkOrderOutput.determine()#DETERMINE ENTRIES
+						WorkOrderOutput.display(selected_items)
+						if len(selected_items)>0:
+
+							delete_entry = input('Enter the number of the entry you want to delete:  ')
+
+							result = WorkOrderOutput.delete(delete_entry)
+							print(result)
+							if result == 'Row Deleted':
+								break
+						else:
+							break
+					break
 				else:
 					print("Error, invalid entry. Try again.")
 					continue			
 
 			print('')#FORMATTING
+#-------------------------------------------------------------------------------------------
 		if section_to_access in valid_contacts_selection:
-			composite_object = utilities.CorporateDirectors()
+			all_employees = utilities.AllEmployees()
 
-			YvetteSantiago = utilities.ComplianceDirectors('Yvette Santiago', '678-555-4325')
-			composite_object.add(YvetteSantiago)#ADD TO COMPOSITE
-			JaimeVallgor = utilities.ComplianceDirectors('Jaime Vallgor', '678-555-5239')
-			composite_object.add(JaimeVallgor)#ADD TO COMPOSITE
+			emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+			emp2 =  utilities.CompanyEmployee("Compliance","Jaime", "Vallgor","Texas", '408-555-5239')
+			emp3 =  utilities.CompanyEmployee("Regional","Becky","Lively","Georgia", '770-435-8891')
+			emp4 =  utilities.CompanyEmployee("Regional","Misty","Godbey","Texas", '281-727-3344')
+			emp5 =  utilities.CompanyEmployee("Regional","Juan","Vegas","Florida", '754-101-5561')
+			emp6 =  utilities.CompanyEmployee("IT","Scott","McCurdy","Georgia", '678-903-1212')
+			emp7 =  utilities.CompanyEmployee("IT","James","Little","Georgia", '678-231-8871')
+			emp8 =  utilities.CompanyEmployee("Owner","Sandra","Harold","Georgia", '770-333-4561')
+			emp9 =  utilities.CompanyEmployee("Owner","Robert","Harold","Georgia", '770-333-5562')
 
-			BeckyLively = utilities.RegionalDirectors('Georgia','Becky Lively', '770-435-8891')
-			composite_object.add(BeckyLively)#ADD TO COMPOSITE
-			MistyGodbey = utilities.RegionalDirectors('Texas','Misty Godbey', '281-727-3344')
-			composite_object.add(MistyGodbey)#ADD TO COMPOSITE
-			JuanVegas = utilities.RegionalDirectors('Florida','Juan Vegas', '754-101-5561')
-			composite_object.add(JuanVegas)#ADD TO COMPOSITE
-			
-			ScottMcCurdy = utilities.IT('Scott McCurdy', '678-903-1212')
-			composite_object.add(ScottMcCurdy)
-			JamesLittle = utilities.IT('James Little', '678-231-8871')
-			composite_object.add(JamesLittle)
+			all_employees.add(emp1)
+			all_employees.add(emp2)
+			all_employees.add(emp3)
+			all_employees.add(emp4)
+			all_employees.add(emp5)
+			all_employees.add(emp6)
+			all_employees.add(emp7)
+			all_employees.add(emp8)
+			all_employees.add(emp9)
 
-			SandraHarold= utilities.Owner('Sandra Harold', '770-333-4561')
-			composite_object.add(SandraHarold)
-			RobertHarold= utilities.Owner('Robert Harold', '770-333-5562')
-			composite_object.add(RobertHarold)
-			
-			print('\n#################### ADMINISTRATIVE COMPANY CONTACTS ####################')
-			composite_object.display_name_number()#DISPLAY TREE
+			while True:
+				accepted_type_input = ['n','name','s','state','j','job']
+				type_input = input("\nChoose whether to sort by (N) Name, (S) State, (J) Job:  ")
+				type_input = type_input.lower()
+					
+				if type_input in accepted_type_input:				
+					if type_input == 'n' or type_input =='name':
+						list_via_last_names = all_employees.sort_by_last_names()
+						while list_via_last_names.has_next():
+							person = list_via_last_names.next()
+							print(person.__str__("name"))
+						break
+					if type_input == 's' or type_input =='state':
+						list_via_state = all_employees.sort_by_state()
+						while list_via_state.has_next():
+							person = list_via_state.next()
+							print(person.__str__("state"))
+						break
+					if type_input == 'j' or type_input =='job':
+						list_via_job_title = all_employees.sort_by_job_title()
+						while list_via_job_title.has_next():
+							person = list_via_job_title.next()
+							print(person.__str__("title"))
+						break
+				else:
+					print('\nError, input not accepted. Try again.')
+					continue
 
 			print('')#FORMATTING
 
