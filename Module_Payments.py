@@ -25,7 +25,7 @@ class WaterPayments():
 		self.final_payment_list = []
 		#self.mediator = mediator#MEDIATOR OBJECT
 		self.duplicate_entries = []
-
+		self.type='water'
 
 	def ask_payment_data_questions(self):
 		QuestionInputValidation = utilities.QuestionInputValidation()
@@ -107,6 +107,7 @@ class RentPayments():
 		self.final_payment_list = []
 		#self.mediator = mediator#MEDIATOR OBJECT
 		self.duplicate_entries = []
+		self.type='rent'
 
 
 	def ask_payment_data_questions(self):
@@ -123,18 +124,18 @@ class RentPayments():
 			dict_of_answers = {'unit_number': '', 'due_date': '', 'date_collected': '', 'amount_due': '', 'amount_collected': ''}
 			while True:
 				self.unit_number = input("Please enter the appropriate unit number:  ")
-				if QuestionInputValidation.validate_integer(self.unit_number) == "bad":#PASSED BY MEDIATOR
+				if QuestionInputValidation.validate_integer(self.unit_number) == "bad":
 					continue
-				self.unit_number = QuestionInputValidation.validate_integer(self.unit_number)#PASSED BY MEDIATOR
+				self.unit_number = QuestionInputValidation.validate_integer(self.unit_number)
 
 
 				dict_of_answers['unit_number'] = self.unit_number
 				break
 			while True:
 				self.due_date = input("Please enter due date for rent (mm/dd):  ")
-				if QuestionInputValidation.validate_date(self.due_date) == "bad":#PASSED BY MEDIATOR
+				if QuestionInputValidation.validate_date(self.due_date) == "bad":
 					continue
-				self.due_date = QuestionInputValidation.validate_date(self.due_date)#PASSED BY MEDIATOR
+				self.due_date = QuestionInputValidation.validate_date(self.due_date)
 
 				list_for_check = [self.unit_number, self.due_date.split('/')[0]]#ONLY CHECKS FOR MONTH, HENCE SPLIT[0]
 				if list_for_check in self.duplicate_entries:
@@ -150,27 +151,27 @@ class RentPayments():
 				if valid =="N":
 					break
 				self.date_collected = input("Please enter date rent was collected (mm/dd):  ")
-				if QuestionInputValidation.validate_date(self.date_collected) == "bad":#PASSED BY MEDIATOR
+				if QuestionInputValidation.validate_date(self.date_collected) == "bad":
 					continue
-				self.date_collected = QuestionInputValidation.validate_date(self.date_collected)#PASSED BY MEDIATOR
+				self.date_collected = QuestionInputValidation.validate_date(self.date_collected)
 				dict_of_answers['date_collected'] = self.date_collected
 				break
 			while True:
 				if valid =="N":
 					break	
 				self.amount_due = input("Please enter amount due:  ")
-				if QuestionInputValidation.validate_monetary_float(self.amount_due) == "bad":#PASSED BY MEDIATOR
+				if QuestionInputValidation.validate_monetary_float(self.amount_due) == "bad":
 					continue
-				self.amount_due = QuestionInputValidation.validate_monetary_float(self.amount_due)#PASSED BY MEDIATOR
+				self.amount_due = QuestionInputValidation.validate_monetary_float(self.amount_due)
 				dict_of_answers['amount_due'] = self.amount_due
 				break
 			while True:
 				if valid =="N":
 					break
 				self.amount_collected = input("Please enter amount collected:  ")
-				if QuestionInputValidation.validate_monetary_float(self.amount_collected) == "bad":#PASSED BY MEDIATOR
+				if QuestionInputValidation.validate_monetary_float(self.amount_collected) == "bad":
 					continue
-				self.amount_collected = QuestionInputValidation.validate_monetary_float(self.amount_collected)#PASSED BY MEDIATOR
+				self.amount_collected = QuestionInputValidation.validate_monetary_float(self.amount_collected)
 				dict_of_answers['amount_collected'] = self.amount_collected
 				break
 
@@ -184,7 +185,6 @@ class RentPayments():
 				valid ="Y"
 				continue
 
-
 class PaymentManager():
 	def __init__(self):
 		#self.type = type
@@ -195,87 +195,10 @@ class PaymentManager():
 
 
 class PaymentOutput(utilities.GenericOutput):
-	def __init__(self):
-		pass
-
-	def determine(self, list_of_dictionaries):
-		'''
-		METHOD WILL CALCULATE ENTRIES THAT STILL OWE MONEY
-		'''		
-		import datetime
-
-		self.list_of_overdue_residents, self.list_of_residents_that_owe_nothing, self.list_of_residents_that_paid_extra, self.list_to_display = [],[],[],[]
-		for dictionary in list_of_dictionaries:
-			if dictionary['amount_collected'] < dictionary['amount_due']:#IF AMOUNT COLLECTED IS LESS THAN AMOUNT DUE
-				self.list_of_overdue_residents.append(dictionary)#ONLY ONE IMPORTANT NOW
-			elif dictionary['amount_collected'] == dictionary['amount_due']:#IF AMOUNT COLLECTED IS EQUAL TO AMOUNT DUE
-				self.list_of_residents_that_owe_nothing.append(dictionary)
-			else:#RESIDENT OVERPAID, WHICH IS NOT OVERLY COMMON
-				self.list_of_residents_that_paid_extra.append(dictionary)
-
-		#combined_dictionary = { k:[d[k] for d in self.list_of_overdue_residents] for k in self.list_of_overdue_residents[0] }#NOT NEEDED NOW, MAYBE LATER
-		#print(combined_dictionary)#TESTING
-		for single_entry in self.list_of_overdue_residents:
-			amount_still_needed = float(single_entry['amount_due']) - float(single_entry['amount_collected'])
-			date_for_determination = datetime.datetime.strptime(single_entry['due_date'], "%m/%d")
-			month_for_determination = date_for_determination.strftime('%B')
-			today = datetime.datetime.now()
-			year_for_determination = today.year
-			
-			string_to_add_to_list = 'Unit {0}: owes ${1:.2f} for {2} in {3}.'.format(single_entry['unit_number'],amount_still_needed, month_for_determination, year_for_determination)
-			self.list_to_display.append(string_to_add_to_list)
-
-		return self.list_to_display
-
-	def display(self, list_of_overdue_residents):
-		'''
-		METHOD WILL DISPLAY ENTRIES THAT STILL OWE MONEY
-		'''
-		if list_of_overdue_residents == []:
-			print("No Overdue Residents!\n")
-		else:
-			for bad_unit in list_of_overdue_residents:
-				print (bad_unit)
-			print('')#FORMATTING
-
-class DelinquentNotice(object):
-	'''
-	TECHNICALLY THIS COULD BE A COMMON UTILITY, BUT AT THIS TIME ONLY PAYMENT DOCUMENTS ARE GENERATED SO IT IS
-	MODULIZED HERE. WORK ORDER DATA WOULD NOT NEED TO BE MADE INTO A DOCUMENT SO THIS WILL REMAIN HERE UNTIL 
-	A NEW TASK THAT REQURES DOCUMENT GENERATION IS CREATED IN FUTURE RELEASES.
-
-	METHOD WILL GENERATE TEXT FILE FOR EACH UNIT THAT STILL OWES MONEY
-	'''
-	def __init__(self):
-		pass
-
-	def generate_late_payment_document(self, list_of_overdue_residents):
-		import os
-		document_titles = []
-		for item in list_of_overdue_residents:
-			unit_for_doc_title = item.split(':')[0]
-			month_for_doc_title = item.split('for')[1].split(' ')[1]
-			year_for_doc_title = item.split('in')[1].split(' ')[1].replace(".","")
-			#print(year_for_doc_title)#TESTING
-			title_to_append = unit_for_doc_title.replace(" ", "")+'-'+month_for_doc_title+'-'+year_for_doc_title
-			document_titles.append(title_to_append)
-
-		
-		if document_titles:
-			#print(document_titles)#TESTING
-			counter = 0
-			if not os.path.exists("DelinquentNotices"):#PLACED HERE SO THERE ARE NOT STUPID CRASHES
-				os.makedirs("DelinquentNotices")
-
-			for document in document_titles:
-				with open(os.path.join('DelinquentNotices', document+'.txt'), 'w') as file:
-					file.write("Dear Resident,\n\n")
-					file.write("Our records indicate that:\n{0}\n\n".format(list_of_overdue_residents[counter]))
-					file.write("Please drop by the leasing office and pay at your earliest convenience.\n\n")
-					file.write("Sincerely,\n\n")
-					file.write("Management")
-				counter+=1
-
-		#print(list_of_overdue_residents)TESTING
-
-		#raise BadData
+	def __init__(self, state):
+		self.state = state
+	#def change_state(self, state):#I THINK THIS OPTION IS CLEANER, BUT IT IS NOT USED 
+		#self.state = state
+	def do_request(self,list, type):
+		self.state.handle_request(list, type)
+	print('')#FORMATTING

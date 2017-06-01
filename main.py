@@ -21,16 +21,18 @@ def initial_question():
 
 def main():
 	outer_most_continue = "y"
-
+	mediator = utilities.ConcreteMediator()
 	while outer_most_continue == "y":
 		initial_question()
 		if section_to_access in valid_quit_selection:
 			outer_most_continue ="n"#BREAK OUT OF LOOP
 #-------------------------------------------------------------------------------------------
 		if section_to_access in valid_payments_selection:
+			starting_state = utilities.StateForStarting()#STATE
+			state_for_display = utilities.StateForDisplay()#STATE
+			ending_state = utilities.StateForDocumentGeneration()#STATE
 
-			PaymentOutput = utilities.GenericOutput().make_payment_output()#FACTORY
-			DelinquentNotice = payments.DelinquentNotice()
+			PaymentOutput = utilities.GenericOutput().make_payment_output(starting_state)#FACTORY
 			while True:
 				payment_selection = input("Do you want to enter (Rent) Rent Payment or (Water) Water Payment? :  ")
 				if payment_selection.lower() == 'rent' or payment_selection.lower() == 'r':
@@ -39,12 +41,13 @@ def main():
 					rent_payment = payment_factory.select('rent')
 					rent_payment.ask_payment_data_questions()#ASK PAYMENT DATA QUESTIONS FOR RENTAL ENTRY
 					print('')#FORMATTING
-					#DETERMINE WHICH RESIDENTS STILL OWE MONEY FOR A MONTH
-					overdue_residents = PaymentOutput.determine(rent_payment.final_payment_list)
-					#DISPLAY OVERDUE RESIDENTS
-					PaymentOutput.display(overdue_residents)
-					#PRINT NOTICES FOR OVERDUE RESIDENTS
-					DelinquentNotice.generate_late_payment_document(overdue_residents)#PASSED VIA MEDIATOR
+					#SET STATE TO DETERMINE WHICH RESIDENTS STILL OWE MONEY FOR A MONTH AND DISPLAY THEM
+					PaymentOutput = utilities.GenericOutput().make_payment_output(state_for_display)#STATE CHANGE
+					PaymentOutput.do_request(rent_payment.final_payment_list, type='rent')
+					#SET STATE TO ENDING STATE AND GENERATE LATE PAYMENT DOCUMENTS
+					PaymentOutput = utilities.GenericOutput().make_payment_output(ending_state)#STATE CHANGE
+					PaymentOutput.do_request(rent_payment.final_payment_list, type='rent')
+
 					break
 				elif payment_selection.lower() == 'water' or payment_selection.lower() == 'w':
 					payment_manager= utilities.factoryType(payments.PaymentManager())#ABSTRACT FACTORY
@@ -52,12 +55,12 @@ def main():
 					water_payment = payment_factory.select('water')
 					water_payment.ask_payment_data_questions()#ASK PAYMENT DATA QUESTIONS FOR RENTAL ENTRY
 					print('')#FORMATTING
-					#DETERMINE WHICH RESIDENTS STILL OWE MONEY FOR A MONTH
-					overdue_residents = PaymentOutput.determine(water_payment.final_payment_list)
-					#DISPLAY OVERDUE RESIDENTS
-					PaymentOutput.display(overdue_residents)
-					#PRINT NOTICES FOR OVERDUE RESIDENTS
-					DelinquentNotice.generate_late_payment_document(overdue_residents)#PASSED VIA MEDIATOR
+					#SET STATE TO DETERMINE WHICH RESIDENTS STILL OWE MONEY FOR A MONTH AND DISPLAY THEM
+					PaymentOutput = utilities.GenericOutput().make_payment_output(state_for_display)#STATE CHANGE
+					PaymentOutput.do_request(water_payment.final_payment_list, type="water")
+					#SET STATE TO ENDING STATE AND GENERATE LATE PAYMENT DOCUMENTS
+					PaymentOutput = utilities.GenericOutput().make_payment_output(ending_state)#STATE CHANGE
+					PaymentOutput.do_request(water_payment.final_payment_list, type="water")
 					break
 				else:
 					print("Error, not a valid entry. Try again.")
@@ -77,7 +80,7 @@ def main():
 					bedroom_work_order.ask_work_order_questions()#ASK PAYMENT DATA QUESTIONS FOR RENTAL ENTRY
 					print('')#FORMATTING
 					
-					WorkOrderOutput.store(bedroom_work_order.final_work_order_list)
+					mediator.WorkOrderStorage.store(bedroom_work_order.final_work_order_list)#MEDIATOR ------------------------------------------
 					break
 				elif work_order_selection.lower() == 'kitchen' or work_order_selection.lower() == 'k':
 					work_order_manager= utilities.factoryType(workOrders.WorkOrderManager())#ABSTRACT FACTORY
@@ -86,21 +89,21 @@ def main():
 					kitchen_work_order.ask_work_order_questions()#ASK PAYMENT DATA QUESTIONS FOR RENTAL ENTRY
 					print('')#FORMATTING
 
-					WorkOrderOutput.store(kitchen_work_order.final_work_order_list)
+					mediator.WorkOrderStorage.store(kitchen_work_order.final_work_order_list)#STORE USING MEDIATOR
 					break
 				elif work_order_selection.lower() == 'check' or work_order_selection.lower() == 'c':
-					selected_items = WorkOrderOutput.determine()#DETERMINE ENTRIES
-					WorkOrderOutput.display(selected_items)#DISPLAY					
+					selected_items = mediator.WorkOrderDetermine.determine()#DETERMINE ENTRIES VIA MEDIATOR
+					mediator.WorkOrderDetermine.display(selected_items)#DISPLAY	VIA MEDIATOR				
 					break
 				elif work_order_selection.lower() == 'delete' or work_order_selection.lower() == 'd':
 					while True:
-						selected_items = WorkOrderOutput.determine()#DETERMINE ENTRIES
-						WorkOrderOutput.display(selected_items)
+						selected_items = mediator.WorkOrderDetermine.determine()#DETERMINE ENTRIES VIA MEDIATOR
+						mediator.WorkOrderDetermine.display(selected_items)#MEDIATOR ------------------------------------------
 						if len(selected_items)>0:
 
 							delete_entry = input('Enter the number of the entry you want to delete:  ')
 
-							result = WorkOrderOutput.delete(delete_entry)
+							result = mediator.WorkOrderStorage.delete(delete_entry)
 							print(result)
 							if result == 'Row Deleted':
 								break
@@ -143,21 +146,22 @@ def main():
 					
 				if type_input in accepted_type_input:				
 					if type_input == 'n' or type_input =='name':
-						list_via_last_names = all_employees.sort_by_last_names()
-						while list_via_last_names.has_next():
-							person = list_via_last_names.next()
+						iterator_list_via_last_names = all_employees.create_name_iterator()
+						#print(iterator_list_via_last_names.get_element(1).__str__("name"))#THIS IS HOW YOU GET SPECIFIC ELEMENTS
+						while iterator_list_via_last_names.has_another():
+							person = iterator_list_via_last_names.next()#NEXT RETURNS NEXT PERSON
 							print(person.__str__("name"))
 						break
 					if type_input == 's' or type_input =='state':
-						list_via_state = all_employees.sort_by_state()
-						while list_via_state.has_next():
-							person = list_via_state.next()
+						iterator_list_via_state = all_employees.create_state_iterator()
+						while iterator_list_via_state.has_another():
+							person = iterator_list_via_state.next()
 							print(person.__str__("state"))
 						break
 					if type_input == 'j' or type_input =='job':
-						list_via_job_title = all_employees.sort_by_job_title()
-						while list_via_job_title.has_next():
-							person = list_via_job_title.next()
+						iterator_list_via_job_title = all_employees.create_job_iterator()
+						while iterator_list_via_job_title.has_another():
+							person = iterator_list_via_job_title.next()
 							print(person.__str__("title"))
 						break
 				else:
