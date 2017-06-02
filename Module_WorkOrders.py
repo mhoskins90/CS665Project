@@ -111,8 +111,9 @@ class WorkOrderKitchen():
 				break
 			else:
 				valid ="Y"
+				mediator = utilities.ConcreteMediator()
+				mediator.WorkOrderStorage.store(self.final_work_order_list)
 				continue
-
 
 class WorkOrderManager():
 	def make_work_order(self):
