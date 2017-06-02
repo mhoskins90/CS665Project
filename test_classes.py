@@ -6,15 +6,12 @@ import pytest#YOU MUST INSTALL PYTEST ON SYSTEM FOR THIS TO WORK
 #pip install pytest
 
 QuestionInputValidation = utilities.QuestionInputValidation()
-PaymentOutput = payments.PaymentOutput()
-DelinquentNotice = payments.DelinquentNotice()
-WorkOrderOutput = workOrders.WorkOrderOutput()
-DatabaseManager1 = utilities.DatabaseManager()#SINGLETON
-DatabaseManager2 = utilities.DatabaseManager()#SINGLETON
 
 ###########--------------UTILITIES TESTS-----------------###########
 #-------------------------------------------------------------------
 def test_singleton_database():
+	DatabaseManager1 = utilities.DatabaseManager()#SINGLETON
+	DatabaseManager2 = utilities.DatabaseManager()#SINGLETON
 	assert id(DatabaseManager1) == id(DatabaseManager2)
 
 
@@ -47,94 +44,91 @@ def test_string_length_validation():
 		assert False
 	else:
 		assert True
+#-------------------------------------------------------------------ITERATOR
+all_employees = utilities.AllEmployees()
 
-#-------------------------------------------------------------------
-
-PaymentFactory1 = payments.PaymentFactory()#SINGLETON
-PaymentFactory2 = payments.PaymentFactory()#SINGLETON
-
-###########--------------PAYMENTS TESTS-----------------###########
-def test_singleton_payment_factory():
-	assert id(PaymentFactory1) == id(PaymentFactory2)
-
-'''
-def test_ask_payment_data_questions(): #YOU CAN'T TEST INPUT QUESTIONS
-	try:#
-		mediator.PaymentManager.ask_payment_data_questions()
-	except Exception:
-		assert False
-	else:
-		assert True
-'''
-#------------------------------------------------------------------
-
-def test_determine_p():
+def test_name_iterator():
 	try:
-		PaymentOutput.determine([{'unit_number':17, 'due_date':'05/05', 'date_collected':'05/05', 'amount_due':1100, 'amount_collected':900}])
-	except Exception:
+		emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+		all_employees.add(emp1)
+		iterator_list_via_last_names = all_employees.create_name_iterator()
+		while iterator_list_via_last_names.has_another():
+			person = iterator_list_via_last_names.next()#NEXT RETURNS NEXT PERSON
+	except:
 		assert False
 	else:
 		assert True
 
-list_for_test = ['Test: for Test in Test.']
-
-def test_display_p():
+def test_job_iterator():
 	try:
-		PaymentOutput.display(list_for_test)
-	except Exception:
+		emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+		all_employees.add(emp1)
+		iterator_list_via_job_title = all_employees.create_job_iterator()
+		while iterator_list_via_job_title.has_another():
+			person = iterator_list_via_job_title.next()
+	except:
+		assert False
+	else:
+		assert True
+def test_state_iterator():
+	try:
+		emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+		all_employees.add(emp1)
+		iterator_list_via_state = all_employees.create_state_iterator()
+		while iterator_list_via_state.has_another():
+			person = iterator_list_via_state.next()
+	except:
+		assert False
+	else:
+		assert True
+#-------------------------------------------------------------------STATE
+
+final_payment_list = [{'unit_number':17, 'due_date':'05/05', 'date_collected':'05/05', 'amount_due':1100, 'amount_collected':900}]
+
+def test_state_display():
+	starting_state = utilities.StateForStarting()#STATE
+	PaymentOutput = utilities.GenericOutput().make_payment_output(starting_state)#STATE CHANGE
+	try:
+		PaymentOutput.do_request(final_payment_list, type='rent')
+	except:
 		assert False
 	else:
 		assert True
 
-
-
-def test_generate_late_payment_document():
+def test_state_display():
+	state_for_display = utilities.StateForDisplay()#STATE
+	PaymentOutput = utilities.GenericOutput().make_payment_output(state_for_display)#STATE CHANGE
 	try:
-		DelinquentNotice.generate_late_payment_document(list_for_test)
-	except Exception:
+		PaymentOutput.do_request(final_payment_list, type='rent')
+	except:
 		assert False
 	else:
 		assert True
 
-
-###########--------------WORK ORDER MODULE TESTS-----------------###########
-WorkOrderFactory1 = workOrders.WorkOrderFactory()#SINGLETON
-WorkOrderFactory2 = workOrders.WorkOrderFactory()#SINGLETON
-#TESTS
-def test_singleton_work_order_factory():
-	assert id(WorkOrderFactory1) == id(WorkOrderFactory2)
-'''
-def test_ask_work_order_questions(): #YOU CAN'T TEST INPUT QUESTIONS
+def test_state_ending():
+	ending_state = utilities.StateForDocumentGeneration()#STATE
+	PaymentOutput = utilities.GenericOutput().make_payment_output(ending_state)#STATE CHANGE
 	try:
-		mediator.WorkOrderManager.ask_work_order_questions()
-	except Exception:
+		PaymentOutput.do_request(final_payment_list, type='rent')
+	except:
 		assert False
 	else:
 		assert True
-'''
-#-----------------------------------------------------------THESE FAIL BECAUSE THEY HAVE NOT BEEN IMPLEMENTED YET.
-tuple_to_display = ()
-dict_of_answers = [{'unit_number': 'test', 'issue': 'test','type': 'test'}]
-def test_determine():
+#-------------------------------------------------------------------MEDIATOR
+mediator = utilities.ConcreteMediator()#MEDIATOR
+
+def test_mediator_display():
 	try:
-		WorkOrderOutput.determine()
-	except Exception:
+		mediator.WorkOrderDetermine.display(mediator.WorkOrderDetermine.determine())
+	except:
 		assert False
 	else:
 		assert True
 
-def test_display():
+def test_mediator_storage():
 	try:
-		WorkOrderOutput.display(tuple_to_display)
-	except Exception:
-		assert False
-	else:
-		assert True
-
-def test_store():
-	try:
-		WorkOrderOutput.store([{'unit_number': 0, 'issue': 'test', 'type': 'test'}])
-	except Exception:
+		mediator.WorkOrderStorage.store([{'unit_number': 0, 'issue': 'test', 'type': 'test'}])#MEDIATOR
+	except:
 		assert False
 	else:
 		assert True
