@@ -10,3 +10,6 @@
 # Work Orders
 - You have the ability to submit, check, or delete work orders saved into an external database.
 - Database is contained in a local file saved in the 'WorkOrders' directory mentioned earlier.
+# Contacts
+- You will be prompted to select a sorting method for administrative company contacts.
+- You can sort using name, job title, or state of residence.
