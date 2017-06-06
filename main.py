@@ -1,6 +1,7 @@
 import Module_Payments as payments 
 import Module_WorkOrders as workOrders
 import Module_Utilities as utilities
+import Module_Contacts as contacts
 
 valid_payments_selection = ['p','pay','payments','payment']
 valid_work_order_selection = ['w','wo','work','order','workorder','workorders']
@@ -117,17 +118,17 @@ def main():
 			print('')#FORMATTING
 #-------------------------------------------------------------------------------------------
 		if section_to_access in valid_contacts_selection:
-			all_employees = utilities.AllEmployees()
+			all_employees = contacts.AllEmployees()
 
-			emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
-			emp2 =  utilities.CompanyEmployee("Compliance","Jaime", "Vallgor","Texas", '408-555-5239')
-			emp3 =  utilities.CompanyEmployee("Regional","Becky","Lively","Georgia", '770-435-8891')
-			emp4 =  utilities.CompanyEmployee("Regional","Misty","Godbey","Texas", '281-727-3344')
-			emp5 =  utilities.CompanyEmployee("Regional","Juan","Vegas","Florida", '754-101-5561')
-			emp6 =  utilities.CompanyEmployee("IT","Scott","McCurdy","Georgia", '678-903-1212')
-			emp7 =  utilities.CompanyEmployee("IT","James","Little","Georgia", '678-231-8871')
-			emp8 =  utilities.CompanyEmployee("Owner","Sandra","Harold","Georgia", '770-333-4561')
-			emp9 =  utilities.CompanyEmployee("Owner","Robert","Harold","Georgia", '770-333-5562')
+			emp1 =  contacts.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+			emp2 =  contacts.CompanyEmployee("Compliance","Jaime", "Vallgor","Texas", '408-555-5239')
+			emp3 =  contacts.CompanyEmployee("Regional","Becky","Lively","Georgia", '770-435-8891')
+			emp4 =  contacts.CompanyEmployee("Regional","Misty","Godbey","Texas", '281-727-3344')
+			emp5 =  contacts.CompanyEmployee("Regional","Juan","Vegas","Florida", '754-101-5561')
+			emp6 =  contacts.CompanyEmployee("IT","Scott","McCurdy","Georgia", '678-903-1212')
+			emp7 =  contacts.CompanyEmployee("IT","James","Little","Georgia", '678-231-8871')
+			emp8 =  contacts.CompanyEmployee("Owner","Sandra","Harold","Georgia", '770-333-4561')
+			emp9 =  contacts.CompanyEmployee("Owner","Robert","Harold","Georgia", '770-333-5562')
 
 			all_employees.add(emp1)
 			all_employees.add(emp2)
