@@ -1,6 +1,5 @@
-from Module_Utilities import BadData #CUSTOM EXCEPTION CLASS USED FOR TESTS
+import framework as framework
 import Module_Utilities as utilities
-
 
 class AbstractWorkOrderFactory():
 	def make_work_order_kitchen(self): 
@@ -8,7 +7,7 @@ class AbstractWorkOrderFactory():
 	def make_work_order_bedroom(self): 
 		pass
 
-class WorkOrderFactory(AbstractWorkOrderFactory, metaclass=utilities.Singleton):
+class WorkOrderFactory(AbstractWorkOrderFactory, metaclass=framework.Singleton):
 	def select(self, type):
 		if type.lower()=="bedroom":
 			return WorkOrderBedroom()
@@ -27,13 +26,11 @@ class WorkOrderBedroom():
 		#self.mediator = mediator
 
 	def ask_work_order_questions(self):
-		QuestionInputValidation = utilities.QuestionInputValidation()
-		
+		QuestionInputValidation = framework.QuestionInputValidation()
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR WORK ORDER DATA ENTRY
 		QUESTIONS WILL INCLUDE:
 		UNIT NUMBER, DESCRIPTION OF ISSUE, POTENTIALLY ALSO STATUS (OPEN OR CLOSED)
-
 		'''
 		continue_asking_work_order_questions = "yes"
 		valid = "Y"
@@ -55,9 +52,8 @@ class WorkOrderBedroom():
 				dict_of_answers['issue'] = self.issue
 				break
 			
-
 			self.final_work_order_list.append(dict_of_answers)
-			#print(self.final_work_order_list)
+
 			continue_asking_work_order_questions = input("Continue entering Work Orders? (Y) Yes | Enter any other key to stop:  ")
 			if continue_asking_work_order_questions.lower() != "y" and continue_asking_work_order_questions.lower() != "yes":
 				valid ="Y"
@@ -71,11 +67,9 @@ class WorkOrderBedroom():
 class WorkOrderKitchen():
 	def __init__(self):
 		self.final_work_order_list = []
-		#self.mediator = mediator
 
 	def ask_work_order_questions(self):
-		QuestionInputValidation = utilities.QuestionInputValidation()
-		
+		QuestionInputValidation = framework.QuestionInputValidation()
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR WORK ORDER DATA ENTRY
 		QUESTIONS WILL INCLUDE:
@@ -102,9 +96,8 @@ class WorkOrderKitchen():
 				dict_of_answers['issue'] = self.issue
 				break
 			
-
 			self.final_work_order_list.append(dict_of_answers)#THIS ALLOWS FOR MULTPLE ENTRIES
-			#print(self.final_work_order_list)
+
 			continue_asking_work_order_questions = input("Continue entering Work Orders? (Y) Yes | Enter any other key to stop:  ")
 			if continue_asking_work_order_questions.lower() != "y" and continue_asking_work_order_questions.lower() != "yes":
 				valid ="Y"
@@ -119,21 +112,14 @@ class WorkOrderManager():
 	def make_work_order(self):
 		return WorkOrderFactory()
 
-
 class WorkOrderOutput(utilities.GenericOutput):
-	#KNOWN ISSUE: NEED TO PROVIDE A METHOD FOR DELETING WORK ORDERS FROM DB. WILL COMPLETE NEXT VERSION.
 	def __init__(self):
-		import os
-		if not os.path.exists("WorkOrders"):#PLACED HERE SO THERE ARE NOT STUPID CRASHES
-			os.makedirs("WorkOrders")
+		pass
 		
-		#self.dbHandler = utilities.DatabaseManager(os.path.join('WorkOrders', 'workOrders.db'), dbType="sqlite3")#SINGLETON 
-
-
 class WorkOrderDetermine(WorkOrderOutput):
 	def __init__(self, mediator):
-		super().__init__()
 		self.mediator = mediator
+
 	def determine(self):
 		'''
 		METHOD WILL DETERMINE ENTERED WORK ORDERS
@@ -155,8 +141,8 @@ class WorkOrderDetermine(WorkOrderOutput):
 
 class WorkOrderStorage(WorkOrderOutput):
 	def __init__(self, mediator):
-		super().__init__()
 		self.mediator = mediator
+
 	def delete(self,item_to_delete):
 		'''
 		METHOD WILL DELETE WORK ORDER ENTRIES
@@ -173,7 +159,6 @@ class WorkOrderStorage(WorkOrderOutput):
 		METHOD WILL STORE WORK ORDER ENTRIES
 		'''
 		for dictionary in entered_data:
-			#print(dictionary)
 			unit_number = dictionary['unit_number']
 			type = dictionary['type']
 			issue = dictionary['issue']

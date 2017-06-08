@@ -143,3 +143,4 @@ class AllEmployees(AbstractAllEmployees):
 
 	def create_state_iterator(self):
 		return EmployeeStateIterator(self.employees)
+		

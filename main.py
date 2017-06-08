@@ -2,6 +2,7 @@ import Module_Payments as payments
 import Module_WorkOrders as workOrders
 import Module_Utilities as utilities
 import Module_Contacts as contacts
+import framework as framework
 
 valid_payments_selection = ['p','pay','payments','payment']
 valid_work_order_selection = ['w','wo','work','order','workorder','workorders']
@@ -22,13 +23,13 @@ def initial_question():
 
 def main():
 	outer_most_continue = "y"
-	mediator = utilities.ConcreteMediator()
 	while outer_most_continue == "y":
 		initial_question()
 		if section_to_access in valid_quit_selection:
 			outer_most_continue ="n"#BREAK OUT OF LOOP
 #-------------------------------------------------------------------------------------------
 		if section_to_access in valid_payments_selection:
+			framework.PaymentsSetup()#FRAMEWORK
 			starting_state = utilities.StateForStarting()#STATE
 			state_for_display = utilities.StateForDisplay()#STATE
 			ending_state = utilities.StateForDocumentGeneration()#STATE
@@ -68,10 +69,16 @@ def main():
 					continue
 #-------------------------------------------------------------------------------------------
 		if section_to_access in valid_work_order_selection:
+			framework.WorkOrdersSetup()#FRAMEWORK
+			mediator = utilities.ConcreteMediator()
 			WorkOrderOutput = utilities.GenericOutput().make_work_order_output()#FACTORY
-			dbHandler = utilities.DatabaseManager("workOrders.db", dbType="sqlite3")#SINGLETON
-			dbHandler.query('''CREATE TABLE IF NOT EXISTS 
-			workOrders(workOrderID INTEGER PRIMARY KEY, entry_date TEXT default CURRENT_DATETIME, unitNumber INTEGER, type TEXT, issue TEXT)''')#NEED TO ENSURE THIS TABLE IS THERE
+			dbHandler = framework.DatabaseManager("workOrders.db", dbType="sqlite3")#SINGLETON
+			dbHandler.query('''CREATE TABLE IF NOT EXISTS workOrders(
+			workOrderID INTEGER PRIMARY KEY, 
+			entry_date TEXT default CURRENT_DATETIME, 
+			unitNumber INTEGER, 
+			type TEXT, 
+			issue TEXT)''')#NEED TO ENSURE THIS TABLE IS THERE
 			while True:
 				work_order_selection = input("Select what you want to do: (B) Bedroom Work Orders, (K) Kitchen Work Orders, (C) Check Work Orders, (D) Delete Work Orders :  ")
 				if work_order_selection.lower() == 'bedroom' or work_order_selection.lower() == 'b':
@@ -118,27 +125,7 @@ def main():
 			print('')#FORMATTING
 #-------------------------------------------------------------------------------------------
 		if section_to_access in valid_contacts_selection:
-			all_employees = contacts.AllEmployees()
-
-			emp1 =  contacts.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
-			emp2 =  contacts.CompanyEmployee("Compliance","Jaime", "Vallgor","Texas", '408-555-5239')
-			emp3 =  contacts.CompanyEmployee("Regional","Becky","Lively","Georgia", '770-435-8891')
-			emp4 =  contacts.CompanyEmployee("Regional","Misty","Godbey","Texas", '281-727-3344')
-			emp5 =  contacts.CompanyEmployee("Regional","Juan","Vegas","Florida", '754-101-5561')
-			emp6 =  contacts.CompanyEmployee("IT","Scott","McCurdy","Georgia", '678-903-1212')
-			emp7 =  contacts.CompanyEmployee("IT","James","Little","Georgia", '678-231-8871')
-			emp8 =  contacts.CompanyEmployee("Owner","Sandra","Harold","Georgia", '770-333-4561')
-			emp9 =  contacts.CompanyEmployee("Owner","Robert","Harold","Georgia", '770-333-5562')
-
-			all_employees.add(emp1)
-			all_employees.add(emp2)
-			all_employees.add(emp3)
-			all_employees.add(emp4)
-			all_employees.add(emp5)
-			all_employees.add(emp6)
-			all_employees.add(emp7)
-			all_employees.add(emp8)
-			all_employees.add(emp9)
+			contacts = framework.AdministrativeContactsSetup()#FRAMEWORK
 
 			while True:
 				accepted_type_input = ['n','name','s','state','j','job']
@@ -147,20 +134,20 @@ def main():
 					
 				if type_input in accepted_type_input:				
 					if type_input == 'n' or type_input =='name':
-						iterator_list_via_last_names = all_employees.create_name_iterator()
+						iterator_list_via_last_names = contacts.all_employees.create_name_iterator()
 						#print(iterator_list_via_last_names.get_element(1).__str__("name"))#THIS IS HOW YOU GET SPECIFIC ELEMENTS
 						while iterator_list_via_last_names.has_another():
 							person = iterator_list_via_last_names.next()#NEXT RETURNS NEXT PERSON
 							print(person.__str__("name"))
 						break
 					if type_input == 's' or type_input =='state':
-						iterator_list_via_state = all_employees.create_state_iterator()
+						iterator_list_via_state = contacts.all_employees.create_state_iterator()
 						while iterator_list_via_state.has_another():
 							person = iterator_list_via_state.next()
 							print(person.__str__("state"))
 						break
 					if type_input == 'j' or type_input =='job':
-						iterator_list_via_job_title = all_employees.create_job_iterator()
+						iterator_list_via_job_title = contacts.all_employees.create_job_iterator()
 						while iterator_list_via_job_title.has_another():
 							person = iterator_list_via_job_title.next()
 							print(person.__str__("title"))

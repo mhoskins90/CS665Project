@@ -1,4 +1,4 @@
-from Module_Utilities import BadData #CUSTOM EXCEPTION CLASS USED FOR TESTS
+import framework as framework
 import Module_Utilities as utilities
 
 class AbstractPaymentFactory():
@@ -7,7 +7,7 @@ class AbstractPaymentFactory():
 	def make_payment_for_water(self): 
 		pass
 
-class PaymentFactory(AbstractPaymentFactory, metaclass=utilities.Singleton):
+class PaymentFactory(AbstractPaymentFactory, metaclass=framework.Singleton):
 	def select(self, type):
 		if type.lower()=="rent":
 			return RentPayments()
@@ -23,12 +23,11 @@ class PaymentFactory(AbstractPaymentFactory, metaclass=utilities.Singleton):
 class WaterPayments():
 	def __init__(self):
 		self.final_payment_list = []
-		#self.mediator = mediator#MEDIATOR OBJECT
 		self.duplicate_entries = []
 		self.type='water'
 
 	def ask_payment_data_questions(self):
-		QuestionInputValidation = utilities.QuestionInputValidation()
+		QuestionInputValidation = framework.QuestionInputValidation()
 		#self.final_payment_list = []
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR PAYMENT DATA ENTRY
@@ -61,7 +60,7 @@ class WaterPayments():
 					break
 
 				self.duplicate_entries.append(list_for_check)
-				#print(self.duplicate_entries)#TESTING
+				
 				dict_of_answers['due_date'] = self.due_date
 				break				
 			while True:
@@ -105,14 +104,12 @@ class WaterPayments():
 class RentPayments():
 	def __init__(self):
 		self.final_payment_list = []
-		#self.mediator = mediator#MEDIATOR OBJECT
 		self.duplicate_entries = []
 		self.type='rent'
 
 
 	def ask_payment_data_questions(self):
-		QuestionInputValidation = utilities.QuestionInputValidation()
-		#self.final_payment_list = []
+		QuestionInputValidation = framework.QuestionInputValidation()
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR PAYMENT DATA ENTRY
 		QUESTIONS WILL INCLUDE:
@@ -144,7 +141,7 @@ class RentPayments():
 					break
 
 				self.duplicate_entries.append(list_for_check)
-				#print(self.duplicate_entries)#TESTING
+				
 				dict_of_answers['due_date'] = self.due_date
 				break				
 			while True:
@@ -187,7 +184,6 @@ class RentPayments():
 
 class PaymentManager():
 	def __init__(self):
-		#self.type = type
 		pass
 
 	def make_payment(self):
@@ -197,7 +193,7 @@ class PaymentManager():
 class PaymentOutput(utilities.GenericOutput):
 	def __init__(self, state):
 		self.state = state
-	#def change_state(self, state):#I THINK THIS OPTION IS CLEANER, BUT IT IS NOT USED 
+	#def change_state(self, state):#I THINK THIS OPTION IS CLEANER
 		#self.state = state
 	def do_request(self,list, type):
 		self.state.handle_request(list, type)

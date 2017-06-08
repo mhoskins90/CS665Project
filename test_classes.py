@@ -1,17 +1,19 @@
-import Module_Payments as payments #MODULE 1
-import Module_WorkOrders as workOrders #MODULE 2
-import Module_Utilities as utilities #MODULE 3
+import Module_Payments as payments
+import Module_WorkOrders as workOrders
+import Module_Utilities as utilities
+import framework as framework
+import Module_Contacts as contacts
 
 import pytest#YOU MUST INSTALL PYTEST ON SYSTEM FOR THIS TO WORK
 #pip install pytest
 
-QuestionInputValidation = utilities.QuestionInputValidation()
+QuestionInputValidation = framework.QuestionInputValidation()
 
 ###########--------------UTILITIES TESTS-----------------###########
 #-------------------------------------------------------------------
 def test_singleton_database():
-	DatabaseManager1 = utilities.DatabaseManager()#SINGLETON
-	DatabaseManager2 = utilities.DatabaseManager()#SINGLETON
+	DatabaseManager1 = framework.DatabaseManager()#SINGLETON
+	DatabaseManager2 = framework.DatabaseManager()#SINGLETON
 	assert id(DatabaseManager1) == id(DatabaseManager2)
 
 
@@ -45,11 +47,11 @@ def test_string_length_validation():
 	else:
 		assert True
 #-------------------------------------------------------------------ITERATOR
-all_employees = utilities.AllEmployees()
+all_employees = contacts.AllEmployees()
 
 def test_name_iterator():
 	try:
-		emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+		emp1 =  contacts.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
 		all_employees.add(emp1)
 		iterator_list_via_last_names = all_employees.create_name_iterator()
 		while iterator_list_via_last_names.has_another():
@@ -61,7 +63,7 @@ def test_name_iterator():
 
 def test_job_iterator():
 	try:
-		emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+		emp1 =  contacts.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
 		all_employees.add(emp1)
 		iterator_list_via_job_title = all_employees.create_job_iterator()
 		while iterator_list_via_job_title.has_another():
@@ -72,7 +74,7 @@ def test_job_iterator():
 		assert True
 def test_state_iterator():
 	try:
-		emp1 =  utilities.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
+		emp1 =  contacts.CompanyEmployee("Compliance","Yvette","Santiago","Georgia", '678-555-4325')
 		all_employees.add(emp1)
 		iterator_list_via_state = all_employees.create_state_iterator()
 		while iterator_list_via_state.has_another():

@@ -1,140 +1,31 @@
-
+import framework as framework
 class BadData(Exception):#CUSTOM EXCEPTION CLASS USED FOR TESTS
 	pass
-
 #---------------------------------------------------------------------------------ABSTRACT FACTORY PIECE
-		
 class factoryType:
 	def __init__(self, type):
 		self.type = type
-
-#---------------------------------------------------------------------------SINGLETON
-
-class Singleton(type):
-	def __init__(self, className, bases, attributes, **kwargs):
-		#super().__init__(className, bases, attributes)
-		self.only_instance = None
-
-	def __call__(self, *args, **kwargs):
-		if self.only_instance is None:
-			self.only_instance = super().__call__(*args, **kwargs)
-		return self.only_instance
-
-
-class DatabaseManager(metaclass=Singleton):
-	def __init__(self, mediator, dbFile, dbType="SQLITE3"):
-		self.mediator = mediator
-		import sqlite3
-		'''
-		PRECONDITIONS: 
-		MUST INSTANTIATE WITH DB FILE NAME AND DB TYPE
-		DB TYPE IS USED FOR FUTURE FLEXIBILITY
-		
-		'''
-		if dbType.upper() == "SQLITE3":
-			self.connection = sqlite3.connect(dbFile)
-			self.connection.commit()
-			self.cursor = self.connection.cursor()
-		elif dbType.upper() == "MYSQL":#SHOWING EASE OF FUTURE ADDITIONS 
-			print("{0} Databases Are Not Implemented".format(dbType))
-		else:
-			print("{0} Databases Are Not Implemented".format(dbType))
-
-
-	def query(self, statement):
-		self.cursor.execute(statement)
-		self.connection.commit()#AUTOMATICALLY COMMIT CHANGES
-		return self.cursor
-
-	def close(self):
-		self.connection.close()
-
-
 #---------------------------------------------------------------------------MEDIATOR 
-
 class AbstractMediator():
 	pass
 
-class ConcreteMediator(AbstractMediator, metaclass=Singleton):    
+class ConcreteMediator(AbstractMediator, metaclass=framework.Singleton):    
 	def __init__(self):
 		import Module_WorkOrders as workOrder
+		import framework as framework
 		import os
 		self.WorkOrderDetermine = workOrder.WorkOrderDetermine(self)
 		self.WorkOrderStorage = workOrder.WorkOrderStorage(self)
 
-		self.dbHandler = DatabaseManager(self, os.path.join('WorkOrders', 'workOrders.db'))
+		self.dbHandler = framework.DatabaseManager(self, os.path.join('WorkOrders', 'workOrders.db'))
 		#self.objects = []
 	#def add_object(self, object):	self.objects.append(object)#NOT NEEDED, MAYBE LATER
 
 #-----------------------------------------------------------------------------------------------------------------
-class QuestionInputValidation(object):
-	def __init__(self):
-		pass
-		#self.QuestionInputValidation = QuestionInputValidation()
-	def validate_integer(self, variable):
-		'''
-		HANDLES INTEGER VALIDATION FOR UNIT NUMBERS
-		'''
-		try:
-			final_variable = int(variable)
-		except Exception as error:
-			final_variable = 'bad'
-			print('Error, {0}'.format(error))
-		return final_variable
-	def validate_date(self, variable):
-		'''
-		HANDLES DATE VALIDATION, TO ENSURE DATE IS IN PROPER FORMAT
-		'''
-		import datetime#NEEDED FOR DATE CHECK
-
-		try:
-			final_variable = variable
-			datetime.datetime.strptime(final_variable, '%m/%d')
-		except Exception as error:
-			final_variable = 'bad'
-			print('Error, {0}'.format(error))
-		return final_variable
-
-	def validate_monetary_float(self, variable):
-		'''
-		HANDLES MONEY VALIDATION TO ENSURE NUMBER CAN BE CONVERTED TO FLOAT
-		'''
-		try:
-			final_variable = float(variable)
-			#final_variable = "{0:.2f}".format(final_variable)
-		except Exception as error:
-			final_variable = 'bad'
-			print('Error, {0}'.format(error))
-		return final_variable
-	def validate_string_length(self, variable):
-		'''
-		HANDLES STRING LENGTH VALIDATION TO ENSURE ENTERED WORK ORDER HAS A DESCRIPTION OF THE ISSUE
-		'''
-		if len(variable) > 2:
-			final_variable = variable
-		else:
-			final_variable ='bad'
-			print('Error, {0}'.format("You must enter more than 2 characters."))
-		return final_variable
-
-		#raise BadData	
-#-----------------------------------------------------------------------------------------------------------------
 class GenericOutput(object):#BASE/ABSTRACT OUTPUT CLASS
 	def __init__(self):
 		pass
-	''' 
-	#NOT NEEDED
-	def select(self, type):
-		if type.lower()=="payments":
-			import Module_Payments as payments
-			return payments.PaymentOutput()
-		elif type.lower()=="work":
-			import Module_WorkOrders as workOrders
-			return workOrders.WorkOrderOutput()
-			#pass
-		else:
-			print("Error in GenericOutput type, '{0}' is not recognized.".format(self.type))
-	'''
+
 	@staticmethod
 	def make_payment_output(state):
 		import Module_Payments as payments
@@ -144,22 +35,17 @@ class GenericOutput(object):#BASE/ABSTRACT OUTPUT CLASS
 	def make_work_order_output():
 		import Module_WorkOrders as workOrders
 		return workOrders.WorkOrderOutput()
-
 #-----------------------------------------------------------------------------------------------------------------STATE
-
 class AbstractState():
 	def handle_request(self):
 		pass
-
 
 class StateForStarting(AbstractState):
 	"""
 	STATE OF PAYMENT OUTPUT OBJECT WHEN USER IS DETERMINING WHO IS LATE ON RENT
 	"""
-
 	def handle_request(self,list_of_dictionaries):
 		print('Nothing done, object still in starting state.')
-
 
 class StateForDisplay(AbstractState):
 	"""
@@ -206,14 +92,10 @@ class StateForDisplay(AbstractState):
 				print (bad_unit)
 			print('')#FORMATTING			
 
-
-		#print (self.list_to_display)
-
 class StateForDocumentGeneration(AbstractState):
 	"""
 	STATE OF PAYMENT OUTPUT OBJECT WHEN USER IS FINISHED
 	"""
-
 	def handle_request(self, list_of_dictionaries,type=None):
 		import os
 		import datetime
@@ -257,9 +139,7 @@ class StateForDocumentGeneration(AbstractState):
 		if document_titles:
 			#print(document_titles)#TESTING
 			counter = 0
-			if not os.path.exists("DelinquentNotices"):#PLACED HERE SO THERE ARE NOT STUPID CRASHES
-				os.makedirs("DelinquentNotices")
-			#import os # FOR FILE SIZE CHECK
+
 			for document in document_titles:
 				with open(os.path.join('DelinquentNotices', document+'.txt'), 'a+') as file:
 					file.write("Dear Resident,\n\n")
