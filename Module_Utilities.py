@@ -84,7 +84,9 @@ class StateForDisplay(AbstractState):
 				string_to_add_to_list = 'Unit {0}: owes ${1:.2f} for {2} in {3} for water.'.format(single_entry['unit_number'],amount_still_needed, month_for_determination, year_for_determination)
 			else:
 				string_to_add_to_list = 'Unit {0}: owes ${1:.2f} for {2} in {3}.'.format(single_entry['unit_number'],amount_still_needed, month_for_determination, year_for_determination)
-			self.list_to_display.append(string_to_add_to_list)
+
+			if string_to_add_to_list not in self.list_to_display:#DOUBLE CHECK FOR DUPLICATION
+				self.list_to_display.append(string_to_add_to_list)
 
 	def display_overdue_residents(self):
 		if self.list_to_display == []:
