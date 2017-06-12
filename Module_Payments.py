@@ -26,80 +26,105 @@ class WaterPayments():
 		self.duplicate_entries = []
 		self.type='water'
 
+	def ask_unit_number(self):
+		'''
+		METHOD ASKS FOR UNIT NUMBER
+		'''
+		while True:
+			self.unit_number = input("Please enter the appropriate unit number:  ")
+			if self.QuestionInputValidation.validate_integer(self.unit_number) == "bad":
+				continue
+			self.unit_number = self.QuestionInputValidation.validate_integer(self.unit_number)
+
+			self.dict_of_answers['unit_number'] = self.unit_number
+			break
+	def ask_due_date(self):
+		'''
+		METHOD ASKS DUE DATE
+		'''
+		while True:
+			self.due_date = input("Please enter due date for {0} payment (mm/dd):  ".format(self.type))
+			if self.QuestionInputValidation.validate_date(self.due_date) == "bad":
+				continue
+			self.due_date = self.QuestionInputValidation.validate_date(self.due_date)
+
+			list_for_check = [self.unit_number, self.due_date.split('/')[0]]#ONLY CHECKS FOR MONTH, HENCE SPLIT[0]
+			if list_for_check in self.duplicate_entries:
+				print('Error, unit number and month already entered. Try again.')#--------------------------------------------------------------------------------------
+				self.valid = 'N'
+				break
+			self.duplicate_entries.append(list_for_check)
+				
+			self.dict_of_answers['due_date'] = self.due_date
+			break
+	def ask_date_collected(self):
+		'''
+		METHOD ASKS DATE COLLECTED
+		'''
+		while True:
+			if self.valid =="N":
+				break
+			self.date_collected = input("Please enter date {0} payment was collected (mm/dd):  ".format(self.type))
+			if self.QuestionInputValidation.validate_date(self.date_collected) == "bad":
+				continue
+			self.date_collected = self.QuestionInputValidation.validate_date(self.date_collected)
+			self.dict_of_answers['date_collected'] = self.date_collected
+			break
+	def ask_amount_due(self):
+		'''
+		METHOD ASKS AMOUNT DUE
+		'''
+		while True:
+			if self.valid =="N":
+				break	
+			self.amount_due = input("Please enter amount due:  ")
+			if self.QuestionInputValidation.validate_monetary_float(self.amount_due) == "bad":
+				continue
+			self.amount_due = self.QuestionInputValidation.validate_monetary_float(self.amount_due)
+			self.dict_of_answers['amount_due'] = self.amount_due
+			break
+	def ask_amount_collected(self):
+		'''
+		METHOD ASKS AMOUNT COLLECTED
+		'''
+		while True:
+			if self.valid =="N":
+				break
+			self.amount_collected = input("Please enter amount collected:  ")
+			if self.QuestionInputValidation.validate_monetary_float(self.amount_collected) == "bad":
+				continue
+			self.amount_collected = self.QuestionInputValidation.validate_monetary_float(self.amount_collected)
+			self.dict_of_answers['amount_collected'] = self.amount_collected
+			break
+
+	def ask_continue_question_for_payments(self):
+		self.continue_asking_payment_data_questions = input("Continue entering payment data? (Y) Yes | Enter any other key to stop:  ")
+		if self.continue_asking_payment_data_questions.lower() != "y" and self.continue_asking_payment_data_questions.lower() != "yes":
+			self.valid ="Y"
+			self.continue_asking_payment_data_questions = 'no'
+		else:
+			self.valid ="Y"
+			self.continue_asking_payment_data_questions = 'yes'
+
 	def ask_payment_data_questions(self):
-		QuestionInputValidation = framework.QuestionInputValidation()
-		#self.final_payment_list = []
+		self.QuestionInputValidation = framework.QuestionInputValidation()
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR PAYMENT DATA ENTRY
-		QUESTIONS WILL INCLUDE:
-		UNIT NUMBER, DUE DATE, DATE PAYMENT WAS ACCEPTED, AMOUNT DUE, AND AMOUNT COLLECTED
 		'''
-		continue_asking_payment_data_questions = "yes"
-		valid = "Y"
-		while continue_asking_payment_data_questions.lower() == "y" or continue_asking_payment_data_questions.lower() == "yes":
-			dict_of_answers = {'unit_number': '', 'due_date': '', 'date_collected': '', 'amount_due': '', 'amount_collected': ''}
-			while True:
-				self.unit_number = input("Please enter the appropriate unit number:  ")
-				if QuestionInputValidation.validate_integer(self.unit_number) == "bad":#PASSED BY MEDIATOR
-					continue
-				self.unit_number = QuestionInputValidation.validate_integer(self.unit_number)#PASSED BY MEDIATOR
+		self.continue_asking_payment_data_questions = "yes"
+		self.valid = "Y"
+		while self.continue_asking_payment_data_questions.lower() == "y" or self.continue_asking_payment_data_questions.lower() == "yes":
+			self.dict_of_answers = {'unit_number': '', 'due_date': '', 'date_collected': '', 'amount_due': '', 'amount_collected': ''}
+			self.ask_unit_number()
+			self.ask_due_date()			
+			self.ask_date_collected()
+			self.ask_amount_due()
+			self.ask_amount_collected()
 
+			if self.valid == 'Y':
+				self.final_payment_list.append(self.dict_of_answers)
 
-				dict_of_answers['unit_number'] = self.unit_number
-				break
-			while True:
-				self.due_date = input("Please enter due date for rent (mm/dd):  ")
-				if QuestionInputValidation.validate_date(self.due_date) == "bad":#PASSED BY MEDIATOR
-					continue
-				self.due_date = QuestionInputValidation.validate_date(self.due_date)#PASSED BY MEDIATOR
-
-				list_for_check = [self.unit_number, self.due_date.split('/')[0]]#ONLY CHECKS FOR MONTH, HENCE SPLIT[0]
-				if list_for_check in self.duplicate_entries:
-					print('Error, unit number and month already entered. Try again.')#--------------------------------------------------------------------------------------
-					valid = 'N'
-					break
-
-				self.duplicate_entries.append(list_for_check)
-				
-				dict_of_answers['due_date'] = self.due_date
-				break				
-			while True:
-				if valid =="N":
-					break
-				self.date_collected = input("Please enter date rent was collected (mm/dd):  ")
-				if QuestionInputValidation.validate_date(self.date_collected) == "bad":#PASSED BY MEDIATOR
-					continue
-				self.date_collected = QuestionInputValidation.validate_date(self.date_collected)#PASSED BY MEDIATOR
-				dict_of_answers['date_collected'] = self.date_collected
-				break
-			while True:
-				if valid =="N":
-					break	
-				self.amount_due = input("Please enter amount due:  ")
-				if QuestionInputValidation.validate_monetary_float(self.amount_due) == "bad":#PASSED BY MEDIATOR
-					continue
-				self.amount_due = QuestionInputValidation.validate_monetary_float(self.amount_due)#PASSED BY MEDIATOR
-				dict_of_answers['amount_due'] = self.amount_due
-				break
-			while True:
-				if valid =="N":
-					break
-				self.amount_collected = input("Please enter amount collected:  ")
-				if QuestionInputValidation.validate_monetary_float(self.amount_collected) == "bad":#PASSED BY MEDIATOR
-					continue
-				self.amount_collected = QuestionInputValidation.validate_monetary_float(self.amount_collected)#PASSED BY MEDIATOR
-				dict_of_answers['amount_collected'] = self.amount_collected
-				break
-
-			self.final_payment_list.append(dict_of_answers)#THIS ALLOWS FOR MULTPLE ENTRIES
-
-			continue_asking_payment_data_questions = input("Continue entering payment data? (Y) Yes | Enter any other key to stop:  ")
-			if continue_asking_payment_data_questions.lower() != "y" and continue_asking_payment_data_questions.lower() != "yes":
-				valid ="Y"
-				break
-			else:
-				valid ="Y"
-				continue
+			self.ask_continue_question_for_payments()
 
 class RentPayments():
 	def __init__(self):
@@ -107,80 +132,105 @@ class RentPayments():
 		self.duplicate_entries = []
 		self.type='rent'
 
+	def ask_unit_number(self):
+		'''
+		METHOD ASKS FOR UNIT NUMBER
+		'''
+		while True:
+			self.unit_number = input("Please enter the appropriate unit number:  ")
+			if self.QuestionInputValidation.validate_integer(self.unit_number) == "bad":
+				continue
+			self.unit_number = self.QuestionInputValidation.validate_integer(self.unit_number)
+
+			self.dict_of_answers['unit_number'] = self.unit_number
+			break
+	def ask_due_date(self):
+		'''
+		METHOD ASKS DUE DATE
+		'''
+		while True:
+			self.due_date = input("Please enter due date for {0} payment (mm/dd):  ".format(self.type))
+			if self.QuestionInputValidation.validate_date(self.due_date) == "bad":
+				continue
+			self.due_date = self.QuestionInputValidation.validate_date(self.due_date)
+
+			list_for_check = [self.unit_number, self.due_date.split('/')[0]]#ONLY CHECKS FOR MONTH, HENCE SPLIT[0]
+			if list_for_check in self.duplicate_entries:
+				print('Error, unit number and month already entered. Try again.')#--------------------------------------------------------------------------------------
+				self.valid = 'N'
+				break
+			self.duplicate_entries.append(list_for_check)
+				
+			self.dict_of_answers['due_date'] = self.due_date
+			break
+	def ask_date_collected(self):
+		'''
+		METHOD ASKS DATE COLLECTED
+		'''
+		while True:
+			if self.valid =="N":
+				break
+			self.date_collected = input("Please enter date {0} payment was collected (mm/dd):  ".format(self.type))
+			if self.QuestionInputValidation.validate_date(self.date_collected) == "bad":
+				continue
+			self.date_collected = self.QuestionInputValidation.validate_date(self.date_collected)
+			self.dict_of_answers['date_collected'] = self.date_collected
+			break
+	def ask_amount_due(self):
+		'''
+		METHOD ASKS AMOUNT DUE
+		'''
+		while True:
+			if self.valid =="N":
+				break	
+			self.amount_due = input("Please enter amount due:  ")
+			if self.QuestionInputValidation.validate_monetary_float(self.amount_due) == "bad":
+				continue
+			self.amount_due = self.QuestionInputValidation.validate_monetary_float(self.amount_due)
+			self.dict_of_answers['amount_due'] = self.amount_due
+			break
+	def ask_amount_collected(self):
+		'''
+		METHOD ASKS AMOUNT COLLECTED
+		'''
+		while True:
+			if self.valid =="N":
+				break
+			self.amount_collected = input("Please enter amount collected:  ")
+			if self.QuestionInputValidation.validate_monetary_float(self.amount_collected) == "bad":
+				continue
+			self.amount_collected = self.QuestionInputValidation.validate_monetary_float(self.amount_collected)
+			self.dict_of_answers['amount_collected'] = self.amount_collected
+			break
+
+	def ask_continue_question_for_payments(self):
+		self.continue_asking_payment_data_questions = input("Continue entering payment data? (Y) Yes | Enter any other key to stop:  ")
+		if self.continue_asking_payment_data_questions.lower() != "y" and self.continue_asking_payment_data_questions.lower() != "yes":
+			self.valid ="Y"
+			self.continue_asking_payment_data_questions = 'no'
+		else:
+			self.valid ="Y"
+			self.continue_asking_payment_data_questions = 'yes'
 
 	def ask_payment_data_questions(self):
-		QuestionInputValidation = framework.QuestionInputValidation()
+		self.QuestionInputValidation = framework.QuestionInputValidation()
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR PAYMENT DATA ENTRY
-		QUESTIONS WILL INCLUDE:
-		UNIT NUMBER, DUE DATE, DATE PAYMENT WAS ACCEPTED, AMOUNT DUE, AND AMOUNT COLLECTED
 		'''
-		continue_asking_payment_data_questions = "yes"
-		valid = "Y"
-		while continue_asking_payment_data_questions.lower() == "y" or continue_asking_payment_data_questions.lower() == "yes":
-			dict_of_answers = {'unit_number': '', 'due_date': '', 'date_collected': '', 'amount_due': '', 'amount_collected': ''}
-			while True:
-				self.unit_number = input("Please enter the appropriate unit number:  ")
-				if QuestionInputValidation.validate_integer(self.unit_number) == "bad":
-					continue
-				self.unit_number = QuestionInputValidation.validate_integer(self.unit_number)
+		self.continue_asking_payment_data_questions = "yes"
+		self.valid = "Y"
+		while self.continue_asking_payment_data_questions.lower() == "y" or self.continue_asking_payment_data_questions.lower() == "yes":
+			self.dict_of_answers = {'unit_number': '', 'due_date': '', 'date_collected': '', 'amount_due': '', 'amount_collected': ''}
+			self.ask_unit_number()
+			self.ask_due_date()			
+			self.ask_date_collected()
+			self.ask_amount_due()
+			self.ask_amount_collected()
 
+			if self.valid == 'Y':
+				self.final_payment_list.append(self.dict_of_answers)
 
-				dict_of_answers['unit_number'] = self.unit_number
-				break
-			while True:
-				self.due_date = input("Please enter due date for rent (mm/dd):  ")
-				if QuestionInputValidation.validate_date(self.due_date) == "bad":
-					continue
-				self.due_date = QuestionInputValidation.validate_date(self.due_date)
-
-				list_for_check = [self.unit_number, self.due_date.split('/')[0]]#ONLY CHECKS FOR MONTH, HENCE SPLIT[0]
-				if list_for_check in self.duplicate_entries:
-					print('Error, unit number and month already entered. Try again.')#--------------------------------------------------------------------------------------
-					valid = 'N'
-					break
-
-				self.duplicate_entries.append(list_for_check)
-				
-				dict_of_answers['due_date'] = self.due_date
-				break				
-			while True:
-				if valid =="N":
-					break
-				self.date_collected = input("Please enter date rent was collected (mm/dd):  ")
-				if QuestionInputValidation.validate_date(self.date_collected) == "bad":
-					continue
-				self.date_collected = QuestionInputValidation.validate_date(self.date_collected)
-				dict_of_answers['date_collected'] = self.date_collected
-				break
-			while True:
-				if valid =="N":
-					break	
-				self.amount_due = input("Please enter amount due:  ")
-				if QuestionInputValidation.validate_monetary_float(self.amount_due) == "bad":
-					continue
-				self.amount_due = QuestionInputValidation.validate_monetary_float(self.amount_due)
-				dict_of_answers['amount_due'] = self.amount_due
-				break
-			while True:
-				if valid =="N":
-					break
-				self.amount_collected = input("Please enter amount collected:  ")
-				if QuestionInputValidation.validate_monetary_float(self.amount_collected) == "bad":
-					continue
-				self.amount_collected = QuestionInputValidation.validate_monetary_float(self.amount_collected)
-				dict_of_answers['amount_collected'] = self.amount_collected
-				break
-
-			self.final_payment_list.append(dict_of_answers)#THIS ALLOWS FOR MULTPLE ENTRIES
-
-			continue_asking_payment_data_questions = input("Continue entering payment data? (Y) Yes | Enter any other key to stop:  ")
-			if continue_asking_payment_data_questions.lower() != "y" and continue_asking_payment_data_questions.lower() != "yes":
-				valid ="Y"
-				break
-			else:
-				valid ="Y"
-				continue
+			self.ask_continue_question_for_payments()
 
 class PaymentManager():
 	def __init__(self):

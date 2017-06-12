@@ -7,6 +7,17 @@ import Module_Contacts as contacts
 import pytest#YOU MUST INSTALL PYTEST ON SYSTEM FOR THIS TO WORK
 #pip install pytest
 
+framework.WorkOrdersSetup()#FRAMEWORK
+mediator = utilities.ConcreteMediator()
+
+mediator.dbHandler.query('''CREATE TABLE IF NOT EXISTS workOrders(
+workOrderID INTEGER PRIMARY KEY, 
+entry_date TEXT default CURRENT_DATETIME, 
+unitNumber INTEGER, 
+type TEXT, 
+issue TEXT)''')#NEED TO ENSURE THIS TABLE IS THERE
+framework.PaymentsSetup()#FRAMEWORK
+
 QuestionInputValidation = framework.QuestionInputValidation()
 
 ###########--------------UTILITIES TESTS-----------------###########
@@ -118,6 +129,7 @@ def test_state_ending():
 		assert True
 #-------------------------------------------------------------------MEDIATOR
 mediator = utilities.ConcreteMediator()#MEDIATOR
+
 
 def test_mediator_display():
 	try:

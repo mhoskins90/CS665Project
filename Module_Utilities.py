@@ -55,9 +55,7 @@ class StateForDisplay(AbstractState):
 	def handle_request(self,list_of_dictionaries,type=None):
 		'''
 		METHOD WILL CALCULATE ENTRIES THAT STILL OWE MONEY
-		'''		
-		import datetime
-
+		'''	
 		self.list_of_overdue_residents, self.list_of_residents_that_owe_nothing, self.list_of_residents_that_paid_extra, self.list_to_display = [],[],[],[]
 		for dictionary in list_of_dictionaries:
 			if dictionary['amount_collected'] < dictionary['amount_due']:#IF AMOUNT COLLECTED IS LESS THAN AMOUNT DUE
@@ -66,38 +64,41 @@ class StateForDisplay(AbstractState):
 				self.list_of_residents_that_owe_nothing.append(dictionary)
 			else:#RESIDENT OVERPAID, WHICH IS NOT OVERLY COMMON
 				self.list_of_residents_that_paid_extra.append(dictionary)
-
-		#combined_dictionary = { k:[d[k] for d in self.list_of_overdue_residents] for k in self.list_of_overdue_residents[0] }#NOT NEEDED NOW, MAYBE LATER
 		
+			self.determine_overdue_residents(type)
+
+		self.display_overdue_residents()
+
+	def determine_overdue_residents(self, type_pass):
+		import datetime
 		for single_entry in self.list_of_overdue_residents:
 			amount_still_needed = float(single_entry['amount_due']) - float(single_entry['amount_collected'])
 			date_for_determination = datetime.datetime.strptime(single_entry['due_date'], "%m/%d")
 			month_for_determination = date_for_determination.strftime('%B')
 			today = datetime.datetime.now()
 			year_for_determination = today.year
-			
-			if type == 'rent':
+					
+			if type_pass == 'rent':
 				string_to_add_to_list = 'Unit {0}: owes ${1:.2f} for {2} in {3} for rent.'.format(single_entry['unit_number'],amount_still_needed, month_for_determination, year_for_determination)
-			elif type == 'water':
+			elif type_pass == 'water':
 				string_to_add_to_list = 'Unit {0}: owes ${1:.2f} for {2} in {3} for water.'.format(single_entry['unit_number'],amount_still_needed, month_for_determination, year_for_determination)
 			else:
 				string_to_add_to_list = 'Unit {0}: owes ${1:.2f} for {2} in {3}.'.format(single_entry['unit_number'],amount_still_needed, month_for_determination, year_for_determination)
 			self.list_to_display.append(string_to_add_to_list)
 
-		
+	def display_overdue_residents(self):
 		if self.list_to_display == []:
 			print("No Overdue Residents!\n")
 		else:
 			for bad_unit in self.list_to_display:
 				print (bad_unit)
-			print('')#FORMATTING			
+			print('')#FORMATTING	
 
 class StateForDocumentGeneration(AbstractState):
 	"""
 	STATE OF PAYMENT OUTPUT OBJECT WHEN USER IS FINISHED
 	"""
 	def handle_request(self, list_of_dictionaries,type=None):
-		import os
 		import datetime
 
 		self.list_of_overdue_residents, self.list_of_residents_that_owe_nothing, self.list_of_residents_that_paid_extra, self.list_to_display = [],[],[],[]
@@ -128,26 +129,26 @@ class StateForDocumentGeneration(AbstractState):
 		#list_of_overdue_residents = []
 		document_titles = []
 		for item in self.list_to_display:
-			unit_for_doc_title = item.split(':')[0]
+			#CREATE DOCUMENT TITLE AND APPEND TO LIST
+			unit_for_doc_title = item.split(':')[0].replace(" ", "")
 			month_for_doc_title = item.split('for')[1].split(' ')[1]
 			year_for_doc_title = item.split('in')[1].split(' ')[1].replace(".","")
-			#print(year_for_doc_title)#TESTING
-			title_to_append = unit_for_doc_title.replace(" ", "")+'-'+month_for_doc_title+'-'+year_for_doc_title
-			document_titles.append(title_to_append)
-
+			document_titles.append(unit_for_doc_title +'-'+month_for_doc_title+'-'+year_for_doc_title)
 		
-		if document_titles:
-			#print(document_titles)#TESTING
+		if document_titles:#IF TITLES NOT EMPTY
 			counter = 0
-
 			for document in document_titles:
-				with open(os.path.join('DelinquentNotices', document+'.txt'), 'a+') as file:
-					file.write("Dear Resident,\n\n")
-					file.write("Our records indicate that:\n{0}\n\n".format(self.list_to_display[counter]))
-					file.write("Please drop by the leasing office and pay at your earliest convenience.\n\n")
-					file.write("Sincerely,\n\n")
-					file.write("Management")
-					file.write("\n\n")
-					file.write("-"*50)
-					file.write("\n")
+				self.write_document(document,counter)
 				counter+=1
+
+	def write_document(self,document_pass,counter_pass):
+		import os
+		with open(os.path.join('DelinquentNotices', document_pass+'.txt'), 'a+') as file:
+			file.write("Dear Resident,\n\n")
+			file.write("Our records indicate that:\n{0}\n\n".format(self.list_to_display[counter_pass]))
+			file.write("Please drop by the leasing office and pay at your earliest convenience.\n\n")
+			file.write("Sincerely,\n\n")
+			file.write("Management")
+			file.write("\n\n")
+			file.write("-"*50)
+			file.write("\n")

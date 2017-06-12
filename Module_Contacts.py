@@ -1,5 +1,4 @@
 #-----------------------------------------------------------------------------------------------------------------ITERATOR
-
 class CompanyEmployee:
 	def __init__(self, position, first_name, last_name, state, phone_number):
 		self.position = position

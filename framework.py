@@ -1,5 +1,4 @@
 #---------------------------------------------------------------------------SINGLETON
-
 class Singleton(type):
 	def __init__(self, className, bases, attributes, **kwargs):
 		#super().__init__(className, bases, attributes)

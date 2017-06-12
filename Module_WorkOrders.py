@@ -23,36 +23,45 @@ class WorkOrderFactory(AbstractWorkOrderFactory, metaclass=framework.Singleton):
 class WorkOrderBedroom():
 	def __init__(self):
 		self.final_work_order_list = []
+		self.QuestionInputValidation = framework.QuestionInputValidation()
 		#self.mediator = mediator
 
+	def ask_unit_number(self):
+		'''
+		METHOD USED TO ASK UNIT NUMBER
+		'''
+		while True:
+			self.unit_number = input("Please enter the appropriate unit number:  ")
+			if self.QuestionInputValidation.validate_integer(self.unit_number) == "bad":
+				continue
+			self.unit_number = self.QuestionInputValidation.validate_integer(self.unit_number)
+
+			self.dict_of_answers['unit_number'] = self.unit_number
+			break
+	def ask_issue(self):
+		'''
+		METHOD USED TO ASK USER ISSUE FOR WORK ORDER
+		'''
+		while True:
+			self.issue = input("Please enter a brief description of the issue:  ")
+			if self.QuestionInputValidation.validate_string_length(self.issue) == "bad":
+				continue
+			self.issue = self.QuestionInputValidation.validate_string_length(self.issue)
+			self.dict_of_answers['issue'] = self.issue
+			break
+
 	def ask_work_order_questions(self):
-		QuestionInputValidation = framework.QuestionInputValidation()
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR WORK ORDER DATA ENTRY
-		QUESTIONS WILL INCLUDE:
-		UNIT NUMBER, DESCRIPTION OF ISSUE, POTENTIALLY ALSO STATUS (OPEN OR CLOSED)
 		'''
 		continue_asking_work_order_questions = "yes"
 		valid = "Y"
 		while continue_asking_work_order_questions.lower() == "y" or continue_asking_work_order_questions.lower() == "yes":
-			dict_of_answers = {'unit_number': '', 'issue': '','type': 'Bedroom'}
-			while True:
-				self.unit_number = input("Please enter the appropriate unit number:  ")
-				if QuestionInputValidation.validate_integer(self.unit_number) == "bad":
-					continue
-				self.unit_number = QuestionInputValidation.validate_integer(self.unit_number)
-
-				dict_of_answers['unit_number'] = self.unit_number
-				break
-			while True:
-				self.issue = input("Please enter a brief description of the issue:  ")
-				if QuestionInputValidation.validate_string_length(self.issue) == "bad":
-					continue
-				self.issue = QuestionInputValidation.validate_string_length(self.issue)
-				dict_of_answers['issue'] = self.issue
-				break
+			self.dict_of_answers = {'unit_number': '', 'issue': '','type': 'Bedroom'}
+			self.ask_unit_number()
+			self.ask_issue()
 			
-			self.final_work_order_list.append(dict_of_answers)
+			self.final_work_order_list.append(self.dict_of_answers)
 
 			continue_asking_work_order_questions = input("Continue entering Work Orders? (Y) Yes | Enter any other key to stop:  ")
 			if continue_asking_work_order_questions.lower() != "y" and continue_asking_work_order_questions.lower() != "yes":
@@ -67,36 +76,44 @@ class WorkOrderBedroom():
 class WorkOrderKitchen():
 	def __init__(self):
 		self.final_work_order_list = []
+		self.QuestionInputValidation = framework.QuestionInputValidation()
+
+	def ask_unit_number(self):
+		'''
+		METHOD USED TO ASK UNIT NUMBER
+		'''
+		while True:
+			self.unit_number = input("Please enter the appropriate unit number:  ")
+			if self.QuestionInputValidation.validate_integer(self.unit_number) == "bad":
+				continue
+			self.unit_number = self.QuestionInputValidation.validate_integer(self.unit_number)
+
+			self.dict_of_answers['unit_number'] = self.unit_number
+			break
+	def ask_issue(self):
+		'''
+		METHOD USED TO ASK USER ISSUE FOR WORK ORDER
+		'''
+		while True:
+			self.issue = input("Please enter a brief description of the issue:  ")
+			if self.QuestionInputValidation.validate_string_length(self.issue) == "bad":
+				continue
+			self.issue = self.QuestionInputValidation.validate_string_length(self.issue)
+			self.dict_of_answers['issue'] = self.issue
+			break
 
 	def ask_work_order_questions(self):
-		QuestionInputValidation = framework.QuestionInputValidation()
 		'''
 		METHOD WILL ASK ALL QUESTIONS FOR WORK ORDER DATA ENTRY
-		QUESTIONS WILL INCLUDE:
-		UNIT NUMBER, DESCRIPTION OF ISSUE, POTENTIALLY ALSO STATUS (OPEN OR CLOSED)
-
 		'''
 		continue_asking_work_order_questions = "yes"
 		valid = "Y"
 		while continue_asking_work_order_questions.lower() == "y" or continue_asking_work_order_questions.lower() == "yes":
-			dict_of_answers = {'unit_number': '', 'issue': '','type': 'Kitchen'}
-			while True:
-				self.unit_number = input("Please enter the appropriate unit number:  ")
-				if QuestionInputValidation.validate_integer(self.unit_number) == "bad":#PASSED BY MEDIATOR
-					continue
-				self.unit_number = QuestionInputValidation.validate_integer(self.unit_number)#PASSED BY MEDIATOR
-
-				dict_of_answers['unit_number'] = self.unit_number
-				break
-			while True:
-				self.issue = input("Please enter a brief description of the issue:  ")
-				if QuestionInputValidation.validate_string_length(self.issue) == "bad":#PASSED BY MEDIATOR
-					continue
-				self.issue = QuestionInputValidation.validate_string_length(self.issue)#PASSED BY MEDIATOR
-				dict_of_answers['issue'] = self.issue
-				break
+			self.dict_of_answers = {'unit_number': '', 'issue': '','type': 'Kitchen'}
+			self.ask_unit_number()
+			self.ask_issue()
 			
-			self.final_work_order_list.append(dict_of_answers)#THIS ALLOWS FOR MULTPLE ENTRIES
+			self.final_work_order_list.append(self.dict_of_answers)
 
 			continue_asking_work_order_questions = input("Continue entering Work Orders? (Y) Yes | Enter any other key to stop:  ")
 			if continue_asking_work_order_questions.lower() != "y" and continue_asking_work_order_questions.lower() != "yes":
